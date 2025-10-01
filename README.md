@@ -142,21 +142,49 @@ Environment variables (if added later) can be set in your host and consumed via 
 ---
 
 ### API Endpoints
+
+#### Authentication & Users
 - `POST /api/v1/auth/register` - User registration
 - `POST /api/v1/auth/login` - User login
 - `GET /api/v1/users/` - Get users list
+- `GET /api/v1/users/{id}` - Get user details
+
+#### Content Management
 - `GET /api/v1/courses/` - Get courses list
 - `POST /api/v1/courses/` - Create course
-- `GET /api/v1/courses/{id}/lessons` - Get course lessons
-- `POST /api/v1/courses/{id}/enroll` - Enroll in course
+- `GET /api/v1/materials/` - Get materials
+- `POST /api/v1/materials/` - Upload materials
+
+#### AI & Chat
+- `POST /api/v1/chat/sessions` - Create chat session
+- `POST /api/v1/chat/sessions/{id}/messages` - Send message
+- `POST /api/v1/chat/sessions/{id}/stream` - Stream AI response
+- `GET /api/v1/chat/sessions/{id}/messages` - Get chat history
+
+#### Assessment
+- `GET /api/v1/assessments/` - Get assessments
+- `POST /api/v1/assessments/` - Create assessment
+- `POST /api/v1/assessments/{id}/generate` - Auto-generate questions
+
+### Advanced Features
+- **AI-Powered Chat**: RAG-based Q&A with Gemini AI
+- **Vector Search**: Semantic search using embeddings
+- **Debate Rooms**: Real-time collaborative discussions
+- **Socratic Bot**: Guided questioning for deeper learning
+- **Auto Quiz Generation**: AI-generated questions from materials
+- **RBAC**: Role-based access control (Admin/Instructor/Student)
+- **Rate Limiting**: Per-user and per-endpoint limits
+- **Background Workers**: File processing, OCR, embedding generation
 
 ### Roadmap (next steps)
-- Connect frontend to backend API
-- Implement authentication/authorization
-- Add file upload for course materials
-- Implement real-time chat for chatbot
-- Add unit/integration tests
-- Add database migrations with Alembic
+- Connect frontend to new backend API
+- Implement real-time features (WebSocket, SSE)
+- Add file upload with virus scanning
+- Implement debate room UI
+- Add comprehensive testing suite
+- Setup CI/CD pipeline
+- Add monitoring and alerting
+- Implement mobile app support
 
 ---
 

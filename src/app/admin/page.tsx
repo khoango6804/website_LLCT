@@ -1,558 +1,247 @@
 'use client';
 
-import { useState } from 'react';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
-  Settings, 
-  Upload, 
-  FolderOpen, 
   Users, 
+  BookOpen, 
   BarChart3, 
+  Settings, 
+  Shield,
+  UserPlus,
   FileText,
+  MessageSquare,
   Database,
-  Eye,
-  Edit,
-  Trash2,
-  Plus,
-  Search,
-  Filter,
-  Download,
-  TrendingUp,
-  Clock,
-  BookOpen,
-  MessageCircle,
-  Award
+  Activity
 } from 'lucide-react';
 
 export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState('documents');
-  const [selectedSubject, setSelectedSubject] = useState('all');
+  const { user, hasRole } = useAuth();
 
-  const subjects = [
-    { id: 'all', name: 'Tất cả môn học', color: 'bg-gray-500' },
-    { id: 'math', name: 'Toán học', color: 'bg-blue-500' },
-    { id: 'physics', name: 'Vật lý', color: 'bg-green-500' },
-    { id: 'chemistry', name: 'Hóa học', color: 'bg-purple-500' },
-    { id: 'biology', name: 'Sinh học', color: 'bg-red-500' },
-    { id: 'english', name: 'Tiếng Anh', color: 'bg-yellow-500' }
-  ];
-
-  const documents = [
+  const stats = [
     {
-      id: 1,
-      name: 'Giáo trình Đại số tuyến tính.pdf',
-      subject: 'math',
-      subjectName: 'Toán học',
-      type: 'Giáo trình',
-      size: '2.5 MB',
-      uploadDate: '2024-01-20',
-      uploadBy: 'TS. Nguyễn Văn A',
-      downloads: 150,
-      status: 'active'
+      title: 'Tổng người dùng',
+      value: '1,234',
+      change: '+12%',
+      icon: Users,
+      color: 'text-blue-600 bg-blue-100'
     },
     {
-      id: 2,
-      name: 'Bài giảng Cơ học lượng tử.pptx',
-      subject: 'physics',
-      subjectName: 'Vật lý',
-      type: 'Bài giảng',
-      size: '15.2 MB',
-      uploadDate: '2024-01-18',
-      uploadBy: 'PGS.TS. Trần Thị B',
-      downloads: 89,
-      status: 'active'
+      title: 'Khóa học',
+      value: '89',
+      change: '+5%',
+      icon: BookOpen,
+      color: 'text-green-600 bg-green-100'
     },
     {
-      id: 3,
-      name: 'Tài liệu tham khảo Hóa học hữu cơ.docx',
-      subject: 'chemistry',
-      subjectName: 'Hóa học',
-      type: 'Tài liệu tham khảo',
-      size: '8.7 MB',
-      uploadDate: '2024-01-15',
-      uploadBy: 'TS. Lê Văn C',
-      downloads: 67,
-      status: 'pending'
+      title: 'Bài tập',
+      value: '456',
+      change: '+8%',
+      icon: FileText,
+      color: 'text-purple-600 bg-purple-100'
+    },
+    {
+      title: 'Tin nhắn',
+      value: '2,345',
+      change: '+15%',
+      icon: MessageSquare,
+      color: 'text-orange-600 bg-orange-100'
     }
   ];
 
-  const chatbotData = [
+  const recentActivities = [
     {
       id: 1,
-      source: 'Giáo trình Toán học - Chương 1',
-      subject: 'math',
-      subjectName: 'Toán học',
-      type: 'Học tập',
-      entries: 150,
-      lastUpdated: '2024-01-20',
-      status: 'active'
+      user: 'Nguyễn Văn A',
+      action: 'Tạo khóa học mới',
+      time: '5 phút trước',
+      type: 'course'
     },
     {
       id: 2,
-      source: 'Câu hỏi thường gặp Vật lý',
-      subject: 'physics',
-      subjectName: 'Vật lý',
-      type: 'Q&A',
-      entries: 89,
-      lastUpdated: '2024-01-18',
-      status: 'active'
+      user: 'Trần Thị B',
+      action: 'Đăng bài tập',
+      time: '15 phút trước',
+      type: 'exercise'
     },
     {
       id: 3,
-      source: 'Tài liệu tranh luận Hóa học',
-      subject: 'chemistry',
-      subjectName: 'Hóa học',
-      type: 'Tranh luận',
-      entries: 45,
-      lastUpdated: '2024-01-15',
-      status: 'pending'
+      user: 'Lê Văn C',
+      action: 'Tham gia khóa học',
+      time: '30 phút trước',
+      type: 'enrollment'
+    },
+    {
+      id: 4,
+      user: 'Phạm Thị D',
+      action: 'Gửi tin nhắn',
+      time: '1 giờ trước',
+      type: 'message'
     }
   ];
 
-  const students = [
+  const quickActions = [
     {
-      id: 1,
-      name: 'Nguyễn Văn X',
-      email: 'nguyenvanx@student.edu',
-      subject: 'math',
-      subjectName: 'Toán học',
-      loginCount: 45,
-      studyTime: 25.5,
-      lastLogin: '2024-01-20',
-      progress: 85,
-      testScore: 92
+      title: 'Quản lý người dùng',
+      description: 'Thêm, sửa, xóa người dùng',
+      icon: Users,
+      href: '/admin/users',
+      color: 'bg-blue-600 hover:bg-blue-700'
     },
     {
-      id: 2,
-      name: 'Trần Thị Y',
-      email: 'tranthiy@student.edu',
-      subject: 'physics',
-      subjectName: 'Vật lý',
-      loginCount: 38,
-      studyTime: 18.2,
-      lastLogin: '2024-01-19',
-      progress: 72,
-      testScore: 88
+      title: 'Quản lý khóa học',
+      description: 'Duyệt và quản lý khóa học',
+      icon: BookOpen,
+      href: '/admin/courses',
+      color: 'bg-green-600 hover:bg-green-700'
     },
     {
-      id: 3,
-      name: 'Lê Văn Z',
-      email: 'levanz@student.edu',
-      subject: 'chemistry',
-      subjectName: 'Hóa học',
-      loginCount: 52,
-      studyTime: 32.1,
-      lastLogin: '2024-01-20',
-      progress: 90,
-      testScore: 95
+      title: 'Báo cáo thống kê',
+      description: 'Xem báo cáo chi tiết',
+      icon: BarChart3,
+      href: '/admin/reports',
+      color: 'bg-purple-600 hover:bg-purple-700'
+    },
+    {
+      title: 'Cài đặt hệ thống',
+      description: 'Cấu hình hệ thống',
+      icon: Settings,
+      href: '/admin/settings',
+      color: 'bg-gray-600 hover:bg-gray-700'
     }
   ];
-
-  const systemStats = {
-    totalStudents: 1200,
-    activeStudents: 850,
-    totalDocuments: 500,
-    totalDownloads: 15000,
-    chatbotQueries: 2500,
-    averageStudyTime: 15.5
-  };
-
-  const filteredDocuments = documents.filter(doc => 
-    selectedSubject === 'all' || doc.subject === selectedSubject
-  );
-
-  const filteredStudents = students.filter(student => 
-    selectedSubject === 'all' || student.subject === selectedSubject
-  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
+    <ProtectedRoute requiredRole="admin">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-3 bg-red-100 rounded-full">
-                <Settings className="h-8 w-8 text-red-600" />
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="bg-red-100 dark:bg-red-900 p-2 rounded-lg">
+                <Shield className="h-6 w-6 text-red-600 dark:text-red-400" />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Quản trị hệ thống</h1>
-                <p className="text-gray-600 mt-1">Quản lý tài liệu, dữ liệu chatbot và theo dõi học sinh</p>
-              </div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Bảng điều khiển Admin</h1>
             </div>
-            <div className="flex items-center space-x-3">
-              <button className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                <Download className="h-4 w-4 mr-2" />
-                Xuất báo cáo
-              </button>
-              <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <Plus className="h-4 w-4 mr-2" />
-                Thêm mới
-              </button>
-            </div>
+            <p className="text-gray-600 dark:text-gray-400">
+              Chào mừng, {user?.full_name}! Quản lý hệ thống E-Learning Platform
+            </p>
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* System Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <div key={index} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Tổng học sinh</p>
-                <p className="text-3xl font-bold text-gray-900">{systemStats.totalStudents}</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{stat.title}</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
+                      <p className="text-sm text-green-600 dark:text-green-400">{stat.change}</p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-full">
-                <Users className="h-6 w-6 text-blue-600" />
+                    <div className={`p-3 rounded-full ${stat.color} dark:bg-opacity-80`}>
+                      <Icon className="h-6 w-6" />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-green-600">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              {systemStats.activeStudents} đang hoạt động
             </div>
+              );
+            })}
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Quick Actions */}
+            <div className="lg:col-span-2">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Thao tác nhanh</h2>
+              </div>
+                <div className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {quickActions.map((action, index) => {
+                      const Icon = action.icon;
+                      return (
+                        <a
+                          key={index}
+                          href={action.href}
+                          className={`${action.color} text-white p-4 rounded-lg transition-colors`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Icon className="h-6 w-6" />
               <div>
-                <p className="text-sm text-gray-600">Tài liệu</p>
-                <p className="text-3xl font-bold text-gray-900">{systemStats.totalDocuments}</p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-full">
-                <FileText className="h-6 w-6 text-green-600" />
+                              <h3 className="font-semibold">{action.title}</h3>
+                              <p className="text-sm opacity-90">{action.description}</p>
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-green-600">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              {systemStats.totalDownloads} lượt tải
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Truy vấn Chatbot</p>
-                <p className="text-3xl font-bold text-gray-900">{systemStats.chatbotQueries}</p>
-              </div>
-              <div className="p-3 bg-purple-100 rounded-full">
-                <MessageCircle className="h-6 w-6 text-purple-600" />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm text-green-600">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              +12% so với tháng trước
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Thời gian học TB</p>
-                <p className="text-3xl font-bold text-gray-900">{systemStats.averageStudyTime}h</p>
-              </div>
-              <div className="p-3 bg-orange-100 rounded-full">
-                <Clock className="h-6 w-6 text-orange-600" />
-              </div>
-            </div>
-            <div className="mt-4 flex items-center text-sm text-green-600">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              +2h so với tuần trước
-            </div>
+                        </a>
+                      );
+                    })}
           </div>
         </div>
-
-        {/* Tabs */}
-        <div className="mb-8">
-          <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
-            <button
-              onClick={() => setActiveTab('documents')}
-              className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'documents'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Quản lý tài liệu
-            </button>
-            <button
-              onClick={() => setActiveTab('chatbot')}
-              className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'chatbot'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Nguồn dữ liệu Chatbot
-            </button>
-            <button
-              onClick={() => setActiveTab('students')}
-              className={`flex-1 py-3 px-4 rounded-md text-sm font-medium transition-colors ${
-                activeTab === 'students'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Quản lý học sinh
-            </button>
-          </div>
-        </div>
-
-        {/* Subject Filter */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
-            {subjects.map((subject) => (
-              <button
-                key={subject.id}
-                onClick={() => setSelectedSubject(subject.id)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  selectedSubject === subject.id
-                    ? `${subject.color} text-white`
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {subject.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Documents Tab */}
-        {activeTab === 'documents' && (
-          <div className="bg-white rounded-xl shadow-lg">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Quản lý tài liệu</h2>
-                <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Tải lên tài liệu
-                </button>
               </div>
             </div>
 
+            {/* Recent Activities */}
+            <div className="lg:col-span-1">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Hoạt động gần đây</h2>
+                </div>
             <div className="p-6">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Tên tài liệu</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Môn học</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Loại</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Kích thước</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Tải xuống</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Trạng thái</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredDocuments.map((doc) => (
-                      <tr key={doc.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4">
-                          <div className="flex items-center">
-                            <FileText className="h-5 w-5 text-gray-400 mr-3" />
-                            <span className="font-medium text-gray-900">{doc.name}</span>
+                  <div className="space-y-4">
+                    {recentActivities.map((activity) => (
+                      <div key={activity.id} className="flex items-start space-x-3">
+                        <div className="flex-shrink-0">
+                          <div className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                            <Activity className="h-4 w-4 text-gray-600 dark:text-gray-400" />
                           </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
-                            subjects.find(s => s.id === doc.subject)?.color || 'bg-gray-500'
-                          }`}>
-                            {doc.subjectName}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-gray-600">{doc.type}</td>
-                        <td className="py-3 px-4 text-gray-600">{doc.size}</td>
-                        <td className="py-3 px-4 text-gray-600">{doc.downloads}</td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            doc.status === 'active' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {doc.status === 'active' ? 'Hoạt động' : 'Chờ duyệt'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-2">
-                            <button className="p-1 text-gray-400 hover:text-blue-600">
-                              <Eye className="h-4 w-4" />
-                            </button>
-                            <button className="p-1 text-gray-400 hover:text-green-600">
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button className="p-1 text-gray-400 hover:text-red-600">
-                              <Trash2 className="h-4 w-4" />
-                            </button>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.user}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{activity.action}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-500">{activity.time}</p>
+                        </div>
                           </div>
-                        </td>
-                      </tr>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Chatbot Data Tab */}
-        {activeTab === 'chatbot' && (
-          <div className="bg-white rounded-xl shadow-lg">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Nguồn dữ liệu Chatbot</h2>
-                <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                  <Database className="h-4 w-4 mr-2" />
-                  Thêm nguồn dữ liệu
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <div className="space-y-4">
-                {chatbotData.map((data) => (
-                  <div key={data.id} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-medium text-gray-900">{data.source}</h3>
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        data.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {data.status === 'active' ? 'Hoạt động' : 'Chờ duyệt'}
-                      </span>
-                    </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 text-sm text-gray-600">
-                      <div>
-                        <span className="font-medium">Môn học:</span>
-                        <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium text-white ${
-                          subjects.find(s => s.id === data.subject)?.color || 'bg-gray-500'
-                        }`}>
-                          {data.subjectName}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="font-medium">Loại:</span> {data.type}
-                      </div>
-                      <div>
-                        <span className="font-medium">Số mục:</span> {data.entries}
-                      </div>
-                      <div>
-                        <span className="font-medium">Cập nhật:</span> {data.lastUpdated}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-3">
-                      <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Xem chi tiết
-                      </button>
-                      <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                        Chỉnh sửa
-                      </button>
-                      <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                        Xóa
-                      </button>
-                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Students Tab */}
-        {activeTab === 'students' && (
-          <div className="bg-white rounded-xl shadow-lg">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Quản lý học sinh</h2>
-                <div className="flex items-center space-x-3">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <input
-                      type="text"
-                      placeholder="Tìm kiếm học sinh..."
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
-                  <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Thêm học sinh
-                  </button>
                 </div>
               </div>
             </div>
+          </div>
 
+          {/* System Status */}
+          <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Trạng thái hệ thống</h2>
+            </div>
             <div className="p-6">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Học sinh</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Môn học</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Lần đăng nhập</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Thời gian học</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Tiến trình</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Điểm TB</th>
-                      <th className="text-left py-3 px-4 font-medium text-gray-900">Thao tác</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredStudents.map((student) => (
-                      <tr key={student.id} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="py-3 px-4">
-                          <div>
-                            <div className="font-medium text-gray-900">{student.name}</div>
-                            <div className="text-sm text-gray-500">{student.email}</div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
-                            subjects.find(s => s.id === student.subject)?.color || 'bg-gray-500'
-                          }`}>
-                            {student.subjectName}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-gray-600">{student.loginCount}</td>
-                        <td className="py-3 px-4 text-gray-600">{student.studyTime}h</td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center">
-                            <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                              <div 
-                                className="bg-blue-600 h-2 rounded-full" 
-                                style={{ width: `${student.progress}%` }}
-                              ></div>
-                            </div>
-                            <span className="text-sm text-gray-600">{student.progress}%</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center">
-                            <Award className="h-4 w-4 text-yellow-500 mr-1" />
-                            <span className="font-medium text-gray-900">{student.testScore}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center space-x-2">
-                            <button className="p-1 text-gray-400 hover:text-blue-600">
-                              <Eye className="h-4 w-4" />
-                            </button>
-                            <button className="p-1 text-gray-400 hover:text-green-600">
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button className="p-1 text-gray-400 hover:text-red-600">
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">Database</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Hoạt động bình thường</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">Redis Cache</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Hoạt động bình thường</p>
+            </div>
+          </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">AI Service</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Hoạt động bình thường</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 }
