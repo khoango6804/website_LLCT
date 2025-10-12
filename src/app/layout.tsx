@@ -5,7 +5,6 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { NotificationsProvider } from "@/contexts/NotificationsContext";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import Toast from "@/components/Toast";
 
@@ -32,22 +31,20 @@ export default function RootLayout({
   return (
     <html lang="vi" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-gray-900`}
       >
-        <ThemeProvider>
-          <AuthProvider>
-            <NotificationsProvider>
-              <ToastProvider>
-                <Navigation />
-                <main className="min-h-screen">
-                  {children}
-                </main>
-                <Footer />
-                <Toast />
-              </ToastProvider>
-            </NotificationsProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <NotificationsProvider>
+            <ToastProvider>
+              <Navigation key="main-navigation" />
+              <main className="min-h-screen">
+                {children}
+              </main>
+              <Footer key="main-footer" />
+              <Toast />
+            </ToastProvider>
+          </NotificationsProvider>
+        </AuthProvider>
       </body>
     </html>
   );

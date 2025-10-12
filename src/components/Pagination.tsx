@@ -21,7 +21,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange, clas
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 py-2 rounded border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-3 py-2 rounded border border-gray-700 hover:bg-gray-100 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         ← Trước
       </button>
@@ -36,7 +36,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange, clas
               className={`px-4 py-2 rounded border ${
                 page === currentPage
                   ? 'bg-blue-600 text-white border-blue-600'
-                  : 'dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  : 'border-gray-700 hover:bg-gray-100 hover:bg-gray-800'
               }`}
             >
               {page}
@@ -47,7 +47,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange, clas
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 py-2 rounded border dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="px-3 py-2 rounded border border-gray-700 hover:bg-gray-100 hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         Sau →
       </button>

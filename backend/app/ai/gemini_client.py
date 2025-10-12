@@ -9,9 +9,10 @@ logger = logging.getLogger(__name__)
 
 class GeminiClient:
     def __init__(self):
-        genai.configure(api_key=settings.GEMINI_API_KEY)
-        self.chat_model = genai.GenerativeModel(settings.GEMINI_MODEL_CHAT)
-        self.complex_model = genai.GenerativeModel(settings.GEMINI_MODEL_COMPLEX)
+        # Use your API key directly
+        genai.configure(api_key="AIzaSyB7PFhFYDIxqZ9FYEzU0AmWJbLNfl3wFcE")
+        self.chat_model = genai.GenerativeModel("gemini-2.0-flash-exp")
+        self.complex_model = genai.GenerativeModel("gemini-2.0-flash-thinking-exp")
         
         # Safety settings
         self.safety_settings = [

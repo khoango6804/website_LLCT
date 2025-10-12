@@ -17,7 +17,7 @@ export default function Error({
     <div className="flex items-center justify-center min-h-screen px-4">
       <div className="text-center max-w-md">
         <h2 className="text-3xl font-bold text-red-600 mb-4">Có lỗi xảy ra!</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-gray-600 text-gray-400 mb-6">
           {error.message || 'Đã xảy ra lỗi không xác định. Vui lòng thử lại.'}
         </p>
         <button

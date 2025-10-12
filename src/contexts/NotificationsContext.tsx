@@ -26,7 +26,7 @@ export function NotificationsProvider({ children }: { children: React.ReactNode 
 
   const add: NotificationsContextType['add'] = (n) => {
     setNotifications(prev => [
-      { id: crypto.randomUUID(), title: n.title, message: n.message, createdAt: Date.now(), read: false },
+      { id: Math.random().toString(36).substr(2, 9), title: n.title, message: n.message, createdAt: Date.now(), read: false },
       ...prev
     ]);
   };

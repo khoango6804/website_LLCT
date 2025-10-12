@@ -1,137 +1,108 @@
-import { 
-  BookOpen, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Linkedin 
-} from 'lucide-react';
 import Link from 'next/link';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
-const Footer = () => {
+export default function Footer() {
+  
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-blue-800 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Logo & Description */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center space-x-2 mb-4">
-              <BookOpen className="h-8 w-8 text-blue-400" />
-              <span className="text-xl font-bold">E-Learning</span>
+        {/* Top Section - Logo and Department */}
+        <div className="flex items-center justify-center mb-8">
+          <div className="flex items-center space-x-6">
+            {/* Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                <span className="text-white font-bold text-xl">SS</span>
+              </div>
+              <div className="text-white">
+                <div className="text-lg font-semibold">Soft Skills Department</div>
+              </div>
             </div>
-            <p className="text-gray-400 mb-4">
-              Nền tảng học tập trực tuyến toàn diện với AI, tài liệu phong phú và cộng đồng sôi động.
-            </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Linkedin className="h-5 w-5" />
-              </a>
+            
+            {/* Vertical Line */}
+            <div className="w-px h-12 bg-white opacity-30"></div>
+            
+            {/* Department Info */}
+            <div className="text-white">
+              <div className="text-lg font-semibold">Soft Skill Department</div>
+              <div className="text-sm opacity-90">Trường ĐH FPT</div>
             </div>
           </div>
+        </div>
 
-          {/* Quick Links */}
+        {/* Call to Action */}
+        <div className="text-center mb-12">
+          <p className="text-xl">
+            Nếu bạn có thắc mắc hay cần giúp đỡ, liên hệ ngay
+          </p>
+        </div>
+
+        {/* Contact Information - 3 Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          {/* Column 1 - Department Office */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Liên kết nhanh</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/courses" className="text-gray-400 hover:text-white transition-colors">
-                  Thư viện môn học
-                </Link>
-              </li>
-              <li>
-                <Link href="/chatbot" className="text-gray-400 hover:text-white transition-colors">
-                  Chatbot học tập
-                </Link>
-              </li>
-              <li>
-                <Link href="/exercises" className="text-gray-400 hover:text-white transition-colors">
-                  Bài tập & Kiểm tra
-                </Link>
-              </li>
-              <li>
-                <Link href="/community" className="text-gray-400 hover:text-white transition-colors">
-                  Cộng đồng
-                </Link>
-              </li>
-            </ul>
+            <h3 className="text-lg font-semibold mb-4">
+              Văn phòng Bộ môn Kỹ năng mềm
+            </h3>
+            <div className="space-y-2">
+              <div>
+                <span className="text-sm">Địa chỉ:</span>
+              </div>
+              <div>
+                <span className="text-sm">Email: vanbinh@fpt.edu.vn</span>
+              </div>
+              <div>
+                <span className="text-sm">Zalo: 090.xxx.xxx</span>
+              </div>
+            </div>
           </div>
 
-          {/* Support */}
+          {/* Column 2 - Instructor 1 */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Hỗ trợ</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/help" className="text-gray-400 hover:text-white transition-colors">
-                  Trung tâm trợ giúp
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-gray-400 hover:text-white transition-colors">
-                  Câu hỏi thường gặp
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
-                  Liên hệ
-                </Link>
-              </li>
-              <li>
-                <Link href="/feedback" className="text-gray-400 hover:text-white transition-colors">
-                  Góp ý
-                </Link>
-              </li>
-            </ul>
+            <h3 className="text-lg font-semibold mb-4">
+              Thầy Văn Bình
+            </h3>
+            <div className="space-y-2">
+              <div>
+                <span className="text-sm">Chức vụ:</span>
+              </div>
+              <div>
+                <span className="text-sm">Email: vanbinh@fpt.edu.vn</span>
+              </div>
+              <div>
+                <span className="text-sm">Zalo: 090.xxx.xxx</span>
+              </div>
+            </div>
           </div>
 
-          {/* Contact Info */}
+          {/* Column 3 - Instructor 2 */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Liên hệ</h3>
-            <div className="space-y-3">
-              <div className="flex items-center">
-                <Mail className="h-4 w-4 text-gray-400 mr-3" />
-                <span className="text-gray-400">support@elearning.edu</span>
+            <h3 className="text-lg font-semibold mb-4">
+              Thầy Văn Bình
+            </h3>
+            <div className="space-y-2">
+              <div>
+                <span className="text-sm">Chức vụ:</span>
               </div>
-              <div className="flex items-center">
-                <Phone className="h-4 w-4 text-gray-400 mr-3" />
-                <span className="text-gray-400">+84 123 456 789</span>
+              <div>
+                <span className="text-sm">Email: vanbinh@fpt.edu.vn</span>
               </div>
-              <div className="flex items-center">
-                <MapPin className="h-4 w-4 text-gray-400 mr-3" />
-                <span className="text-gray-400">Hà Nội, Việt Nam</span>
+              <div>
+                <span className="text-sm">Zalo: 090.xxx.xxx</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-8 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
-              © 2024 E-Learning Platform. Tất cả quyền được bảo lưu.
+        {/* Bottom Section - Copyright */}
+        <div className="border-t border-blue-700 pt-8">
+          <div className="text-center">
+            <p className="text-sm">
+              Soft Skills Department | Trường Đại học FPT
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Chính sách bảo mật
-              </Link>
-              <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Điều khoản sử dụng
-              </Link>
-            </div>
           </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

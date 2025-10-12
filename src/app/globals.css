@@ -2,6 +2,80 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Soft Skills Department FPT Design System */
+:root {
+  /* Primary Colors - FPT Blue */
+  --primary-blue: #1e40af;
+  --primary-blue-light: #3b82f6;
+  --primary-blue-dark: #1e3a8a;
+  
+  /* Secondary Colors */
+  --secondary-cyan: #06b6d4;
+  --secondary-cyan-light: #22d3ee;
+  --secondary-cyan-dark: #0891b2;
+  
+  /* Accent Colors */
+  --accent-green: #10b981;
+  --accent-green-light: #34d399;
+  --accent-green-dark: #059669;
+  
+  /* FPT Brand Colors */
+  --fpt-blue: #1e40af;
+  --fpt-blue-light: #3b82f6;
+  --fpt-blue-dark: #1e3a8a;
+  
+  /* Neutral Colors */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+}
+
+/* Custom Components */
+.admin-sidebar {
+  @apply bg-white border-r border-gray-200 w-64 min-h-screen;
+}
+
+.admin-header {
+  @apply bg-white border-b border-gray-200 px-6 py-4;
+}
+
+.admin-content {
+  @apply bg-gray-50 min-h-screen p-6;
+}
+
+.stat-card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+}
+
+.notification-card {
+  @apply bg-white rounded-lg border border-gray-200 p-4 mb-3;
+}
+
+.btn-primary {
+  @apply bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg font-medium transition-colors;
+}
+
+.btn-secondary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors;
+}
+
+.btn-outline {
+  @apply border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium transition-colors;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -28,7 +102,7 @@ body {
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-gray-900;
   }
 }
 

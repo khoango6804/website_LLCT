@@ -14,7 +14,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
-import { CourseCardSkeleton } from '@/components/LoadingSkeleton';
+import LoadingSkeleton from '@/components/LoadingSkeleton';
 import { formatRelativeTime } from '@/lib/utils';
 
 interface Post {
@@ -161,7 +161,7 @@ export default function CommunityPage() {
             {loading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <CourseCardSkeleton key={i} />
+                  <LoadingSkeleton key={i} type="card" />
                 ))}
               </div>
             ) : (

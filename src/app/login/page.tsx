@@ -3,57 +3,54 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Eye, 
   EyeOff, 
   Mail, 
   Lock, 
-  User, 
-  BookOpen,
-  AlertCircle
+  User
 } from 'lucide-react';
 
 export default function LoginPage() {
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: '',
+    username: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const router = useRouter();
+  const { login, user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setSuccess('');
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Lưu token vào localStorage
-        localStorage.setItem('access_token', data.access_token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+      const success = await login(formData.email, formData.password);
+      
+      if (success) {
+        setSuccess('Đăng nhập thành công!');
         
         // Redirect dựa trên role
-        if (data.user.role === 'admin') {
-          router.push('/admin');
-        } else if (data.user.role === 'instructor') {
-          router.push('/instructor');
-        } else {
-          router.push('/');
-        }
+        setTimeout(() => {
+          if (user?.is_superuser) {
+            router.push('/admin');
+          } else if (user?.is_instructor) {
+            router.push('/instructor');
+          } else {
+            router.push('/');
+          }
+        }, 1000);
       } else {
-        setError(data.detail || 'Đăng nhập thất bại');
+        setError('Email hoặc mật khẩu không đúng');
       }
     } catch (err) {
       setError('Lỗi kết nối. Vui lòng thử lại.');
@@ -70,151 +67,217 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        {/* Logo và Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-full">
-              <BookOpen className="h-8 w-8 text-white" />
+    <div className="min-h-screen bg-white flex items-center justify-center p-[37.5px_245px]">
+      {/* Main Card Container */}
+      <div className="w-full max-w-[1430px] h-[825px] bg-white rounded-3xl shadow-lg flex overflow-hidden">
+        {/* Left Side - Image */}
+        <div className="w-1/2 relative">
+          {/* Classroom Image Placeholder */}
+          <div className="w-full h-full bg-gradient-to-br from-blue-200 via-cyan-200 to-teal-200 flex items-center justify-center relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-10 left-10 w-20 h-20 bg-white bg-opacity-30 rounded-full"></div>
+            <div className="absolute top-32 right-16 w-16 h-16 bg-white bg-opacity-20 rounded-full"></div>
+            <div className="absolute bottom-20 left-20 w-24 h-24 bg-white bg-opacity-25 rounded-full"></div>
+            
+            {/* Main content - Student Image Placeholder */}
+            <div className="text-center z-10">
+              {/* Student figure placeholder */}
+              <div className="w-48 h-64 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-6 relative">
+                <div className="w-32 h-40 bg-white bg-opacity-30 rounded-lg flex items-center justify-center">
+                  <User className="h-20 w-20 text-white" />
+                </div>
+                {/* Desk and notebook */}
+                <div className="absolute bottom-4 left-4 w-16 h-8 bg-white bg-opacity-20 rounded"></div>
+                <div className="absolute bottom-6 right-4 w-12 h-6 bg-white bg-opacity-15 rounded"></div>
+              </div>
+              
+              <h2 className="text-3xl font-bold text-white mb-4">
+                Chào mừng đến với
+              </h2>
+              <h3 className="text-2xl font-semibold text-white opacity-90">
+                Soft Skills Department
+              </h3>
+              <p className="text-white opacity-80 mt-4 max-w-md">
+                Khám phá thư viện online và nâng cao kỹ năng mềm của bạn
+              </p>
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">E-Learning Platform</h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-2">Đăng nhập vào tài khoản của bạn</p>
         </div>
 
-        {/* Form */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-center">
-                <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mr-3" />
-                <span className="text-red-700 dark:text-red-300 text-sm">{error}</span>
-              </div>
-            )}
-
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+        {/* Right Side - Login Form */}
+        <div className="w-1/2 flex items-center justify-center p-8">
+          <div className="w-full max-w-md">
+            {/* Logo and Header */}
+            <div className="text-center mb-6">
+              <div className="flex justify-center mb-3">
+                <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center relative">
+                  <span className="text-white font-bold text-2xl">SS</span>
+                  {/* Notification badge */}
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">284</span>
+                  </div>
                 </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Nhập email của bạn"
-                />
               </div>
+              <h1 className="text-lg font-semibold text-gray-600 mb-4">Soft Skills Department</h1>
+              <h2 className="text-3xl font-bold text-gray-900">
+                {isLogin ? 'MỪNG BẠN TRỞ LẠI ^0^' : 'XIN CHÀO ^v^'}
+              </h2>
             </div>
 
-            {/* Password */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Mật khẩu
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400 dark:text-gray-500" />
-                </div>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                  placeholder="Nhập mật khẩu"
-                />
+            {/* Action Buttons */}
+            <div className="flex mb-6 w-full max-w-[462px] mx-auto">
+              <div className="flex w-full bg-[#92D6D6] rounded-[80px] p-3">
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setIsLogin(true)}
+                  className={`flex-1 py-3 px-4 rounded-[80px] font-medium transition-colors ${
+                    isLogin 
+                      ? 'bg-[#49BBBD] text-white' 
+                      : 'bg-transparent text-[#49BBBD]'
+                  }`}
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400" />
-                  )}
+                  Đăng nhập
                 </button>
-              </div>
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
-            </button>
-
-            {/* Links */}
-            <div className="text-center space-y-2">
-              <Link 
-                href="/forgot-password" 
-                className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
-              >
-                Quên mật khẩu?
-              </Link>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Chưa có tài khoản?{' '}
-                <Link href="/register" className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-medium">
-                  Đăng ký ngay
+                <Link
+                  href="/register"
+                  className={`flex-1 py-3 px-4 rounded-[80px] font-medium transition-colors text-center ${
+                    !isLogin 
+                      ? 'bg-[#49BBBD] text-white' 
+                      : 'bg-transparent text-[#49BBBD]'
+                  }`}
+                >
+                  Đăng ký
                 </Link>
               </div>
             </div>
-          </form>
-        </div>
 
-        {/* Demo Accounts */}
-        <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tài khoản demo</h3>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            {/* Description */}
+            <p className="text-gray-600 text-center mb-8 leading-relaxed text-sm">
+              Đăng nhập ngay để khám phá xem thư viện online của bộ môn Kỹ năng mềm có cập nhập gì mới nhất nhé
+            </p>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Success Message */}
+              {success && (
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-700 text-sm">
+                  {success}
+                </div>
+              )}
+
+              {/* Error Message */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+
+              {/* Email/Username Field */}
               <div>
-                <div className="font-medium text-gray-900 dark:text-white">Admin</div>
-                <div className="text-gray-600 dark:text-gray-400">admin@demo.com / admin123</div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  Tên đăng nhập
+                </label>
+                <div className="relative">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full h-[54px] px-8 py-[18px] border border-[#49BBBD] rounded-[40px] focus:ring-2 focus:ring-[#49BBBD] focus:border-transparent bg-white text-gray-900 placeholder-gray-500 transition-colors"
+                    placeholder="Email hoặc tên người dùng"
+                  />
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                </div>
               </div>
-              <button
-                onClick={() => setFormData({ email: 'admin@demo.com', password: 'admin123' })}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-medium"
-              >
-                Sử dụng
-              </button>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+
+              {/* Username Field (only for registration) */}
+              {!isLogin && (
+                <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
+                    Tên đăng nhập
+                  </label>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="w-full h-[54px] px-8 py-[18px] border border-[#49BBBD] rounded-[40px] focus:ring-2 focus:ring-[#49BBBD] focus:border-transparent bg-white text-gray-900 placeholder-gray-500 transition-colors"
+                    placeholder="Nhập tên người dùng của bạn"
+                  />
+                </div>
+              )}
+
+              {/* Password Field */}
               <div>
-                <div className="font-medium text-gray-900 dark:text-white">Giảng viên</div>
-                <div className="text-gray-600 dark:text-gray-400">instructor@demo.com / instructor123</div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                  Mật khẩu
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="w-full h-[54px] px-8 py-[18px] pr-12 border border-[#49BBBD] rounded-[40px] focus:ring-2 focus:ring-[#49BBBD] focus:border-transparent bg-white text-gray-900 placeholder-gray-500 transition-colors"
+                    placeholder="Nhập mật khẩu của bạn"
+                  />
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                    ) : (
+                      <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
+                    )}
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={() => setFormData({ email: 'instructor@demo.com', password: 'instructor123' })}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-medium"
-              >
-                Sử dụng
-              </button>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div>
-                <div className="font-medium text-gray-900 dark:text-white">Sinh viên</div>
-                <div className="text-gray-600 dark:text-gray-400">student@demo.com / student123</div>
+
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded"
+                  />
+                  <span className="ml-2 text-sm text-gray-600">Ghi nhớ tôi</span>
+                </label>
+                <Link 
+                  href="/forgot-password" 
+                  className="text-sm text-cyan-600 hover:text-cyan-500 font-medium transition-colors"
+                >
+                  Quên mật khẩu ?
+                </Link>
               </div>
+
+              {/* Submit Button */}
               <button
-                onClick={() => setFormData({ email: 'student@demo.com', password: 'student123' })}
-                className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 font-medium"
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[#49BBBD] text-white py-3 px-4 rounded-[40px] hover:bg-[#3a9a9c] focus:ring-2 focus:ring-[#49BBBD] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-lg"
               >
-                Sử dụng
+                {isLoading ? 'Đang xử lý...' : (isLogin ? 'Đăng nhập' : 'Đăng ký')}
               </button>
+            </form>
+
+            {/* Demo Accounts */}
+            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+              <h3 className="text-sm font-medium text-gray-700 mb-3">Tài khoản demo:</h3>
+              <div className="space-y-2 text-xs text-gray-600">
+                <div>Admin: admin@demo.com / admin123</div>
+                <div>Giảng viên: instructor@demo.com / instructor123</div>
+                <div>Sinh viên: student@demo.com / student123</div>
+              </div>
             </div>
           </div>
         </div>
