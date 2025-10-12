@@ -66,23 +66,6 @@ export default function ChatbotPage() {
     }
   };
 
-  const suggestedQuestions = {
-    learning: [
-      'Giải thích khái niệm kỹ năng mềm',
-      'Làm thế nào để cải thiện kỹ năng giao tiếp?',
-      'Các bước để làm việc nhóm hiệu quả'
-    ],
-    debate: [
-      'Tranh luận về tầm quan trọng của kỹ năng mềm',
-      'Phân tích ưu nhược điểm của làm việc nhóm',
-      'Thảo luận về vai trò của lãnh đạo'
-    ],
-    qa: [
-      'Lịch thi của môn MLN111',
-      'Cách sử dụng hệ thống LMS',
-      'Thông tin về giảng viên'
-    ]
-  };
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -278,7 +261,7 @@ export default function ChatbotPage() {
               </div>
 
               {/* Chat Container */}
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+              <div className="bg-white rounded-2xl overflow-hidden">
                 {/* Messages */}
                 <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gradient-to-br from-blue-50 to-white">
                   {messages.map((message) => (
@@ -354,25 +337,9 @@ export default function ChatbotPage() {
                   )}
                 </div>
 
-                {/* Suggested Questions */}
-                <div className="p-6 bg-white">
-                  <p className="text-[#5B5B5B] text-[22px] font-semibold mb-4 leading-[30px]" style={{fontFamily: 'SVN-Gilroy', letterSpacing: '0.44px'}}>Câu hỏi gợi ý</p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {suggestedQuestions[selectedType as keyof typeof suggestedQuestions]?.slice(0, 3).map((question, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setInputMessage(question)}
-                        className="px-6 py-3 bg-white bg-opacity-50 border-2 border-white rounded-xl text-[#160211] hover:bg-opacity-100 transition-colors text-center text-[20px] leading-[30px]"
-                        style={{fontFamily: 'SVN-Gilroy'}}
-                      >
-                        Câu {index + 1}
-                      </button>
-                    ))}
-                  </div>
-                </div>
 
                 {/* Input */}
-                <div className="p-6 bg-white border-t border-gray-200">
+                <div className="p-6 bg-white">
                   <div className="flex items-center space-x-4">
                     <input
                       type="text"
@@ -380,13 +347,13 @@ export default function ChatbotPage() {
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Tôi có thể hỗ trợ gì cho bạn ^v^"
-                      className="flex-1 px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-blue-500 text-[24px] leading-[38.40px] text-[#010514]"
+                      className="flex-1 px-6 py-4 bg-white rounded-2xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-[24px] leading-[38.40px] text-[#010514]"
                       style={{fontFamily: 'SVN-Gilroy'}}
                     />
                     <button
                       onClick={handleSendMessage}
                       disabled={isLoading || !inputMessage.trim()}
-                      className="w-14 h-14 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                      className="w-14 h-14 bg-white rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                     >
                       <Send className="w-6 h-6 text-[#010514]" />
                     </button>

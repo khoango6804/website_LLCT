@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -15,9 +15,9 @@ import {
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    email: '',
+    email: 'admin@demo.com',
     username: '',
-    password: ''
+    password: 'demo123'
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,11 +27,17 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, user } = useAuth();
 
+  useEffect(() => {
+    console.log('Form data updated:', formData);
+  }, [formData]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     setSuccess('');
+
+    console.log('Login attempt with:', { email: formData.email, password: formData.password });
 
     try {
       const success = await login(formData.email, formData.password);
@@ -41,9 +47,9 @@ export default function LoginPage() {
         
         // Redirect dựa trên role
         setTimeout(() => {
-          if (user?.is_superuser) {
+          if (user?.roles?.includes('admin')) {
             router.push('/admin');
-          } else if (user?.is_instructor) {
+          } else if (user?.roles?.includes('instructor')) {
             router.push('/instructor');
           } else {
             router.push('/');
@@ -274,9 +280,9 @@ export default function LoginPage() {
             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
               <h3 className="text-sm font-medium text-gray-700 mb-3">Tài khoản demo:</h3>
               <div className="space-y-2 text-xs text-gray-600">
-                <div>Admin: admin@demo.com / admin123</div>
-                <div>Giảng viên: instructor@demo.com / instructor123</div>
-                <div>Sinh viên: student@demo.com / student123</div>
+                <div>Admin: admin@demo.com / demo123</div>
+                <div>Giảng viên: instructor@demo.com / demo123</div>
+                <div>Sinh viên: student@demo.com / demo123</div>
               </div>
             </div>
           </div>

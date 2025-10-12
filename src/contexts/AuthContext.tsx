@@ -7,12 +7,11 @@ interface User {
   email: string;
   username: string;
   full_name: string;
-  is_active: boolean;
   is_superuser: boolean;
-  is_instructor: boolean;
+  roles: string[];
   avatar_url?: string;
   bio?: string;
-  created_at: string;
+  created_at?: string;
   updated_at?: string;
 }
 
@@ -48,18 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const isAuthenticated = !!user && !!token;
 
   const hasRole = (role: 'admin' | 'instructor' | 'student'): boolean => {
-    if (!user) return false;
-    
-    switch (role) {
-      case 'admin':
-        return user.is_superuser || user.email === 'admin@demo.com'; // Temporary fix
-      case 'instructor':
-        return user.is_instructor;
-      case 'student':
-        return !user.is_superuser && !user.is_instructor;
-      default:
-        return false;
-    }
+    if (!user || !user.roles) return false;
+    return user.roles.includes(role);
   };
 
   const refreshAccessToken = async (): Promise<string | null> => {
@@ -155,10 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           username: 'instructor',
           full_name: 'Instructor User',
           is_superuser: false,
-          is_instructor: true,
-          role: 'instructor',
-          is_active: true,
-          created_at: new Date().toISOString()
+          roles: ['instructor']
         },
         'student@demo.com': {
           id: 3,
@@ -166,10 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           username: 'student',
           full_name: 'Student User',
           is_superuser: false,
-          is_instructor: false,
-          role: 'student',
-          is_active: true,
-          created_at: new Date().toISOString()
+          roles: ['student']
         }
       };
 
