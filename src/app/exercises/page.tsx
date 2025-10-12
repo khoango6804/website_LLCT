@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { GraduationCap, Smile, Puzzle, Lightbulb, Building, Mail, Phone } from 'lucide-react';
+import { GraduationCap, Smile, Puzzle, Lightbulb, Building, Mail, Phone, BookOpen, Users, FileText, BarChart3 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function ExercisesPage() {
@@ -11,32 +11,32 @@ export default function ExercisesPage() {
       id: 'mln111',
       code: 'MLN111',
       name: 'Kỹ năng mềm cơ bản',
-      icon: GraduationCap,
-      color: 'bg-blue-600',
+      icon: BookOpen,
+      color: '#125093',
       description: 'Các kỹ năng mềm cơ bản trong công việc'
     },
     {
       id: 'mln122',
       code: 'MLN122',
       name: 'Giao tiếp hiệu quả',
-      icon: Smile,
-      color: 'bg-blue-400',
+      icon: Users,
+      color: '#29B9E7',
       description: 'Kỹ năng giao tiếp và thuyết trình'
     },
     {
       id: 'mln131',
       code: 'MLN131',
       name: 'Tư duy phản biện',
-      icon: Puzzle,
-      color: 'bg-teal-500',
+      icon: FileText,
+      color: '#49BBBD',
       description: 'Phát triển tư duy logic và phản biện'
     },
     {
       id: 'hcm202',
       code: 'HCM202',
       name: 'Lãnh đạo nhóm',
-      icon: Lightbulb,
-      color: 'bg-teal-600',
+      icon: BarChart3,
+      color: '#49BBBD',
       description: 'Kỹ năng lãnh đạo và quản lý nhóm'
     },
     {
@@ -44,72 +44,84 @@ export default function ExercisesPage() {
       code: 'VNR202',
       name: 'Văn hóa doanh nghiệp',
       icon: Building,
-      color: 'bg-purple-600',
+      color: '#5B72EE',
       description: 'Hiểu biết về văn hóa và môi trường làm việc'
     }
   ]);
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-[#125093] relative overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute w-[20px] h-[20px] left-[1497.09px] top-[490.54px] bg-[#00CBB8] rounded-full"></div>
+        <div className="absolute w-[24px] h-[24px] left-[610px] top-[528.75px] bg-[#29B9E7] rounded-full"></div>
+        <div className="absolute w-[20px] h-[20px] left-[1024.50px] top-[586.96px] bg-[#8C7AFF] rounded-full"></div>
 
-      {/* Hero Section */}
-      <section className="bg-blue-800 text-white py-16 relative overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-10 left-10 w-16 h-16 bg-white bg-opacity-10 rounded-lg flex items-center justify-center">
-          <span className="text-2xl text-purple-300">!</span>
-        </div>
-        <div className="absolute top-20 right-16 w-16 h-16 bg-white bg-opacity-10 rounded-lg flex items-center justify-center">
-          <div className="w-8 h-8 bg-blue-300 rounded"></div>
-        </div>
-        <div className="absolute bottom-10 left-1/4 w-4 h-4 bg-teal-400 rounded-full"></div>
-        <div className="absolute bottom-20 right-1/3 w-4 h-4 bg-purple-400 rounded-full"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold text-teal-400 mb-6">
-            Kiểm tra
-          </h1>
-          <p className="text-xl text-white max-w-3xl mx-auto leading-relaxed">
-            Kiểm tra và củng cố kiến thức để chuẩn bị cho những bài test sắp tới của bộ môn Kỹ năng mềm tại trường ĐH FPT
-          </p>
-        </div>
-      </section>
+        {/* Floating Cards */}
+        <div className="absolute w-[85.86px] h-[85.86px] left-[390px] top-[239.83px] transform -rotate-12 bg-white shadow-[0px_14px_44px_rgba(86,91,221,0.10)] rounded-[20px]"></div>
+        <div className="absolute w-[62.36px] h-[62.36px] left-[403.96px] top-[248.85px] transform -rotate-12 bg-white shadow-[0px_16px_44px_rgba(13,15,28,0.10)] rounded-[20px]"></div>
+        <div className="absolute w-[17.17px] h-[8.59px] left-[419px] top-[260.31px] transform -rotate-12 bg-[#545AE8] rounded-[4px]"></div>
+        <div className="absolute w-[17.17px] h-[8.59px] left-[443.88px] top-[280.72px] transform -rotate-12 bg-[#545AE8] rounded-[4px]"></div>
+        <div className="absolute w-[17.17px] h-[22.90px] left-[421.28px] top-[270.94px] transform -rotate-12 bg-[#545AE8] rounded-[4px]"></div>
+        <div className="absolute w-[17.17px] h-[22.90px] left-[438.58px] top-[256.10px] transform -rotate-12 bg-[#F48C06] rounded-[4px]"></div>
 
-      {/* Subject Selection */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Chọn môn học và kiểm tra xem bạn có "pass" hay không nhé ^0^
-            </h2>
+        <div className="absolute w-[85.11px] h-[85.11px] left-[1531.74px] top-[231.08px] transform rotate-[10deg] bg-white shadow-[0px_14px_44px_rgba(86,91,221,0.10)] rounded-[20px]"></div>
+        <div className="absolute w-[61.82px] h-[61.82px] left-[1541.21px] top-[244.56px] transform rotate-[10deg] bg-white shadow-[0px_16px_44px_rgba(13,15,28,0.10)] rounded-[20px]"></div>
+        <div className="absolute w-[36.73px] h-[29.56px] left-[1550.11px] top-[261.64px] transform rotate-[10deg] overflow-hidden">
+          <div className="w-[36.73px] h-[29.56px] left-[5.09px] top-0 absolute transform rotate-[10deg] bg-[#545AE8]"></div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="relative z-10 pt-32 pb-16">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h1 className="text-[54px] font-bold text-[#00CBB8] mb-6 leading-[81px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
+              Kiểm tra
+            </h1>
+            <p className="text-[24px] text-white leading-[38.40px]" style={{fontFamily: 'Lexend', fontWeight: '400'}}>
+              Kiểm tra và củng cố kiến thức để chuẩn bị cho những bài test sắp tới của bộ môn Kỹ năng mềm tại<br/>
+              trường ĐH FPT
+            </p>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {subjects.map((subject) => {
-              const IconComponent = subject.icon;
-              return (
-                <Link
-                  key={subject.id}
-                  href={`/exercises/${subject.id}`}
-                  className="group"
-                >
-                  <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100">
-                    <div className="text-center">
-                      <div className={`w-16 h-16 ${subject.color} rounded-lg flex items-center justify-center text-white mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-                        <IconComponent className="h-8 w-8" />
+        {/* Subject Selection Section */}
+        <div className="relative z-10 py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-[32px] font-bold text-[#010514] mb-4 leading-[48px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
+                Chọn môn học và<br/>
+                kiểm tra xem bạn có "pass" hay không nhé ^ 0 ^
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+              {subjects.map((subject) => {
+                const IconComponent = subject.icon;
+                return (
+                  <Link
+                    key={subject.id}
+                    href={`/exercises/${subject.id}`}
+                    className="group"
+                  >
+                    <div className="w-full h-[220px] rounded-[16.87px] flex flex-col justify-center items-center gap-[23px] shadow-[0px_15.88px_39.71px_rgba(47,50,125,0.10)] transition-transform hover:scale-105"
+                         style={{backgroundColor: subject.color}}>
+                      <div className="flex flex-col justify-start items-center gap-[23px]">
+                        <div className="w-[74px] h-[74px] relative overflow-hidden">
+                          <div className="w-[68.75px] h-[58.31px] left-[2.62px] top-[8.46px] absolute bg-white"></div>
+                        </div>
+                        <div className="text-white text-[48px] leading-[62.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
+                          {subject.code}
+                        </div>
                       </div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-2">{subject.code}</h3>
-                      <p className="text-sm text-gray-600 leading-relaxed">{subject.name}</p>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </div>
-      </section>
 
-    </div>
+      </div>
     </ProtectedRoute>
   );
 }

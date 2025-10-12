@@ -63,18 +63,17 @@ export default function UserMenu() {
       {/* User Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+        className="flex items-center space-x-4 p-2 rounded-lg hover:bg-gray-100 transition-colors"
       >
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <User className="h-5 w-5 text-white" />
+        <div className="flex items-center space-x-4">
+          <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
+            <User className="h-8 w-8 text-gray-600" />
           </div>
           <div className="text-left">
-            <div className="text-sm font-medium text-gray-900">{user.full_name}</div>
-            <div className="text-xs text-gray-500">{getRoleText()}</div>
+            <div className="text-[20px] text-white leading-[30px]" style={{fontFamily: 'SVN-Gilroy'}}>{user.full_name}</div>
           </div>
         </div>
-        <ChevronDown className={`h-4 w-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-5 w-5 text-white transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {/* Dropdown Menu */}
@@ -129,7 +128,7 @@ export default function UserMenu() {
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  router.push('/admin');
+                  router.push('/admin/dashboard');
                 }}
                 className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
               >

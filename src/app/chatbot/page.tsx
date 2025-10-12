@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { Send, Bot, User, MessageSquare, GraduationCap, Smile, Star, Mail, Phone } from 'lucide-react';
+import { Send, Bot, User, MessageSquare, GraduationCap, Smile, Star, Mail, Phone, ChevronDown } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function ChatbotPage() {
@@ -37,21 +37,21 @@ export default function ChatbotPage() {
       id: 'learning',
       name: 'CHATBOT HỌC TẬP',
       icon: GraduationCap,
-      color: 'bg-blue-500',
+      color: 'bg-[#5B72EE]',
       description: 'Our curriculum focuses on nurturing cognitive, social, emotional, and physical development, ensuring a well-rounded education.'
     },
     {
       id: 'debate',
       name: 'CHATBOT DEBATE',
       icon: MessageSquare,
-      color: 'bg-teal-500',
+      color: 'bg-[#00CBB8]',
       description: 'Our passionate and qualified teachers create a supportive and stimulating learning environment.'
     },
     {
       id: 'qa',
       name: 'CHATBOT Q&A',
       icon: Star,
-      color: 'bg-blue-400',
+      color: 'bg-[#29B9E7]',
       description: 'We prioritize safety and provide a warm and caring atmosphere for every child.'
     }
   ];
@@ -194,189 +194,208 @@ export default function ChatbotPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-white">
-        {/* Hero Section */}
-        <section className="bg-blue-800 text-white py-16 relative overflow-hidden">
-          {/* Decorative Elements */}
-          <div className="absolute top-10 left-10 w-16 h-16 bg-white bg-opacity-10 rounded-lg flex items-center justify-center">
-            <span className="text-2xl">i!</span>
-          </div>
-          <div className="absolute top-20 right-16 w-16 h-16 bg-white bg-opacity-10 rounded-lg flex items-center justify-center">
-            <div className="w-8 h-8 bg-white bg-opacity-20 rounded"></div>
-          </div>
-          <div className="absolute bottom-10 left-20 w-12 h-12 bg-white bg-opacity-10 rounded-full"></div>
-          <div className="absolute bottom-20 right-10 w-20 h-20 bg-white bg-opacity-5 rounded-full"></div>
+      <div className="min-h-screen bg-white relative overflow-hidden">
+        {/* Background with gradient effects */}
+        <div className="absolute inset-0 bg-[#125093]"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-white"></div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-[#89BCFF] rounded-full filter blur-3xl opacity-30 transform -translate-x-1/2 -translate-y-1/2"></div>
+        <div className="absolute top-1/2 right-1/4 w-80 h-80 bg-[#868EFF] rounded-full filter blur-3xl opacity-30"></div>
+        
+        {/* Small decorative dots */}
+        <div className="absolute top-1/3 left-1/4 w-5 h-5 bg-[#8C7AFF] rounded-full"></div>
+        <div className="absolute top-1/4 right-1/3 w-5 h-5 bg-[#00CBB8] rounded-full"></div>
+        <div className="absolute top-1/2 left-1/3 w-6 h-6 bg-[#29B9E7] rounded-full"></div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="text-center">
-              <h1 className="text-5xl font-bold mb-6">CHATBOT AI</h1>
-              <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-                Cùng chatbot AI giải đáp những thắc mắc về các môn học bộ môn kỹ năng mềm tại trường Đại học FPT
+        {/* Floating cards */}
+        <div className="absolute top-1/4 left-1/6 w-20 h-20 bg-white rounded-2xl shadow-lg transform -rotate-12"></div>
+        <div className="absolute top-1/4 right-1/6 w-20 h-20 bg-white rounded-2xl shadow-lg transform rotate-12"></div>
+
+        {/* Main Content */}
+        <div className="relative z-10">
+          {/* Hero Section */}
+          <section className="pt-32 pb-16 text-center">
+            <div className="max-w-4xl mx-auto px-4">
+              <h1 className="text-[54px] font-bold text-[#00CBB8] mb-6 leading-[81px]" style={{fontFamily: 'SVN-Poppins'}}>CHATBOT AI</h1>
+              <p className="text-[24px] text-white leading-[38.40px]" style={{fontFamily: 'Lexend'}}>
+                Cùng chatbot AI giải đáp những thắc mắc về các môn học bộ môn kỹ năng mềm tại<br/>
+                trường Đại học FPT
               </p>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Feature Cards Section */}
-        <section className="py-16 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {chatbotTypes.map((type) => {
-                const IconComponent = type.icon;
-                return (
-                  <div
-                    key={type.id}
-                    className={`${type.color} rounded-lg p-8 text-center text-white cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl ${
-                      selectedType === type.id ? 'ring-4 ring-white ring-opacity-50' : ''
-                    }`}
-                    onClick={() => handleTypeChange(type.id)}
-                  >
-                    <div className="flex justify-center mb-6">
-                      <IconComponent className="w-16 h-16" />
+          {/* Chatbot Type Selection */}
+          <section className="py-16">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {chatbotTypes.map((type) => {
+                  const IconComponent = type.icon;
+                  return (
+                    <div key={type.id} className="relative">
+                      {/* Icon */}
+                      <div className="flex justify-center mb-6">
+                        <div className={`w-16 h-16 ${type.color} rounded-xl flex items-center justify-center text-white shadow-lg`}>
+                          <IconComponent className="w-8 h-8" />
+                        </div>
+                      </div>
+                      
+                      {/* Card */}
+                      <button
+                        onClick={() => handleTypeChange(type.id)}
+                        className={`w-full p-12 bg-white rounded-xl shadow-lg border-2 transition-all duration-300 ${
+                          selectedType === type.id
+                            ? 'border-[#010514] scale-105'
+                            : 'border-transparent hover:shadow-xl hover:scale-105'
+                        }`}
+                      >
+                        <h3 className="text-[28px] font-bold text-[#010514] mb-4 text-left leading-[36.40px]" style={{fontFamily: 'SVN-Poppins'}}>{type.name}</h3>
+                        <p className="text-[20px] text-[#5B5B5B] text-left leading-[30px]" style={{fontFamily: 'SVN-Gilroy'}}>{type.description}</p>
+                      </button>
                     </div>
-                    <h3 className="text-2xl font-bold mb-4">{type.name}</h3>
-                    <p className="text-white/80 text-sm leading-relaxed">{type.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Chat Interface Section */}
-        <section ref={chatSectionRef} className="py-16 bg-gradient-to-br from-blue-50 to-teal-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Section Title */}
-            <div className="text-center mb-12">
-              <div className="flex items-center justify-center mb-4">
-                <div className={`w-16 h-16 ${chatbotTypes.find(t => t.id === selectedType)?.color} rounded-lg flex items-center justify-center text-white mr-4`}>
-                  {(() => {
-                    const IconComponent = chatbotTypes.find(t => t.id === selectedType)?.icon || Smile;
-                    return <IconComponent className="h-8 w-8" />;
-                  })()}
-                </div>
-                <h2 className="text-4xl font-bold text-gray-900">
-                  {chatbotTypes.find(t => t.id === selectedType)?.name}
-                </h2>
+                  );
+                })}
               </div>
             </div>
+          </section>
 
-            {/* Chat Container */}
-            <div className="overflow-hidden">
-              {/* Messages */}
-              <div className="h-96 overflow-y-auto p-6 space-y-4">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
+          {/* Chat Interface Section */}
+          <section ref={chatSectionRef} className="py-16">
+            <div className="max-w-6xl mx-auto px-4">
+              {/* Section Title */}
+              <div className="text-center mb-12">
+                <div className="flex items-center justify-center mb-6">
+                  <div className={`w-16 h-16 ${chatbotTypes.find(t => t.id === selectedType)?.color} rounded-xl flex items-center justify-center text-white shadow-lg mr-4`}>
+                    {(() => {
+                      const IconComponent = chatbotTypes.find(t => t.id === selectedType)?.icon || Smile;
+                      return <IconComponent className="w-8 h-8" />;
+                    })()}
+                  </div>
+                  <h2 className="text-[54px] font-bold text-[#010514] leading-[81px]" style={{fontFamily: 'SVN-Poppins'}}>
+                    {chatbotTypes.find(t => t.id === selectedType)?.name}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Chat Container */}
+              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                {/* Messages */}
+                <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gradient-to-br from-blue-50 to-white">
+                  {messages.map((message) => (
                     <div
-                      className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                        message.type === 'user'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
-                      }`}
+                      key={message.id}
+                      className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                      <div className="text-sm whitespace-pre-line">
-                        {message.content.split('\n').map((line, index) => {
-                          // Handle bullet points
-                          if (line.trim().startsWith('- ')) {
-                            return (
-                              <div key={index} className="flex items-start">
-                                <span className="mr-2">•</span>
-                                <span>{line.substring(2)}</span>
-                              </div>
-                            );
-                          }
-                          // Handle numbered lists
-                          if (line.trim().match(/^\d+\.\s/)) {
-                            return (
-                              <div key={index} className="flex items-start">
-                                <span className="mr-2 font-semibold">{line.match(/^\d+\./)?.[0]}</span>
-                                <span>{line.replace(/^\d+\.\s/, '')}</span>
-                              </div>
-                            );
-                          }
-                          // Handle bold text
-                          if (line.includes('**')) {
-                            const parts = line.split(/(\*\*.*?\*\*)/g);
-                            return (
-                              <div key={index}>
-                                {parts.map((part, partIndex) => {
-                                  if (part.startsWith('**') && part.endsWith('**')) {
-                                    return (
-                                      <strong key={partIndex} className="font-semibold">
-                                        {part.slice(2, -2)}
-                                      </strong>
-                                    );
-                                  }
-                                  return part;
-                                })}
-                              </div>
-                            );
-                          }
-                          // Regular text
-                          return <div key={index}>{line}</div>;
-                        })}
-                      </div>
-                      <p className={`text-xs mt-1 ${
-                        message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
-                      }`}>
-                        {message.timestamp.toLocaleTimeString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-pulse">Đang suy nghĩ...</div>
+                      <div
+                        className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
+                          message.type === 'user'
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-900'
+                        }`}
+                      >
+                        <div className="text-sm whitespace-pre-line">
+                          {message.content.split('\n').map((line, index) => {
+                            // Handle bullet points
+                            if (line.trim().startsWith('- ')) {
+                              return (
+                                <div key={index} className="flex items-start">
+                                  <span className="mr-2">•</span>
+                                  <span>{line.substring(2)}</span>
+                                </div>
+                              );
+                            }
+                            // Handle numbered lists
+                            if (line.trim().match(/^\d+\.\s/)) {
+                              return (
+                                <div key={index} className="flex items-start">
+                                  <span className="mr-2 font-semibold">{line.match(/^\d+\./)?.[0]}</span>
+                                  <span>{line.replace(/^\d+\.\s/, '')}</span>
+                                </div>
+                              );
+                            }
+                            // Handle bold text
+                            if (line.includes('**')) {
+                              const parts = line.split(/(\*\*.*?\*\*)/g);
+                              return (
+                                <div key={index}>
+                                  {parts.map((part, partIndex) => {
+                                    if (part.startsWith('**') && part.endsWith('**')) {
+                                      return (
+                                        <strong key={partIndex} className="font-semibold">
+                                          {part.slice(2, -2)}
+                                        </strong>
+                                      );
+                                    }
+                                    return part;
+                                  })}
+                                </div>
+                              );
+                            }
+                            // Regular text
+                            return <div key={index}>{line}</div>;
+                          })}
+                        </div>
+                        <p className={`text-xs mt-1 ${
+                          message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
+                        }`}>
+                          {message.timestamp.toLocaleTimeString()}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Suggested Questions */}
-              <div className="p-4">
-                <p className="text-sm text-gray-600 mb-3">Câu hỏi gợi ý</p>
-                <div className="flex gap-2 mb-4">
-                  {suggestedQuestions[selectedType as keyof typeof suggestedQuestions]?.slice(0, 2).map((question, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setInputMessage(question)}
-                      className="flex-1 px-3 py-2 bg-white bg-opacity-80 text-gray-700 rounded-lg text-sm hover:bg-opacity-100 transition-colors border border-gray-200"
-                    >
-                      Câu {index + 1}
-                    </button>
                   ))}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="bg-gray-100 text-gray-900 px-4 py-3 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <div className="animate-pulse">Đang suy nghĩ...</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              {/* Input */}
-              <div className="p-4">
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder="Tôi có thể hỗ trợ gì cho bạn ^v^"
-                    className="flex-1 px-4 py-3 bg-white bg-opacity-80 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none focus:bg-opacity-100"
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={isLoading || !inputMessage.trim()}
-                    className="p-3 bg-white bg-opacity-80 text-gray-600 rounded-lg hover:bg-opacity-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border border-gray-200"
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
+                {/* Suggested Questions */}
+                <div className="p-6 bg-white">
+                  <p className="text-[#5B5B5B] text-[22px] font-semibold mb-4 leading-[30px]" style={{fontFamily: 'SVN-Gilroy', letterSpacing: '0.44px'}}>Câu hỏi gợi ý</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {suggestedQuestions[selectedType as keyof typeof suggestedQuestions]?.slice(0, 3).map((question, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setInputMessage(question)}
+                        className="px-6 py-3 bg-white bg-opacity-50 border-2 border-white rounded-xl text-[#160211] hover:bg-opacity-100 transition-colors text-center text-[20px] leading-[30px]"
+                        style={{fontFamily: 'SVN-Gilroy'}}
+                      >
+                        Câu {index + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Input */}
+                <div className="p-6 bg-white border-t border-gray-200">
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="text"
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="Tôi có thể hỗ trợ gì cho bạn ^v^"
+                      className="flex-1 px-6 py-4 bg-white border-2 border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:outline-none focus:border-blue-500 text-[24px] leading-[38.40px] text-[#010514]"
+                      style={{fontFamily: 'SVN-Gilroy'}}
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={isLoading || !inputMessage.trim()}
+                      className="w-14 h-14 bg-white border-2 border-gray-300 rounded-xl hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+                    >
+                      <Send className="w-6 h-6 text-[#010514]" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </ProtectedRoute>
   );

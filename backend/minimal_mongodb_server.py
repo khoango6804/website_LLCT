@@ -100,6 +100,7 @@ async def register(user_data: UserRegister):
             "full_name": user_data.full_name,
             "hashed_password": hashed_password.decode('utf-8'),
             "is_instructor": user_data.is_instructor,
+            "is_superuser": user_data.email == "admin@demo.com",  # Make admin@demo.com a superuser
             "is_active": True,
             "created_at": datetime.utcnow().isoformat()
         }
@@ -113,6 +114,7 @@ async def register(user_data: UserRegister):
             "username": user_doc["username"],
             "full_name": user_doc["full_name"],
             "is_instructor": user_doc["is_instructor"],
+            "is_superuser": user_doc["is_superuser"],
             "is_active": user_doc["is_active"],
             "created_at": user_doc["created_at"]
         }
@@ -141,6 +143,7 @@ async def login(login_data: UserLogin):
             "username": user["username"],
             "full_name": user["full_name"],
             "is_instructor": user["is_instructor"],
+            "is_superuser": user.get("is_superuser", False),  # Default to False if not set
             "is_active": user["is_active"],
             "created_at": user["created_at"]
         }
@@ -165,6 +168,7 @@ async def get_users():
                 "username": user["username"],
                 "full_name": user["full_name"],
                 "is_instructor": user["is_instructor"],
+                "is_superuser": user.get("is_superuser", False),  # Default to False if not set
                 "is_active": user["is_active"],
                 "created_at": user["created_at"]
             }

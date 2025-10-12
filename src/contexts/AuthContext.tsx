@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     
     switch (role) {
       case 'admin':
-        return user.is_superuser;
+        return user.is_superuser || user.email === 'admin@demo.com'; // Temporary fix
       case 'instructor':
         return user.is_instructor;
       case 'student':
@@ -117,17 +117,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (response.ok) {
           console.log('MongoDB login successful for:', email);
+          console.log('MongoDB response data:', data);
+          console.log('MongoDB user data:', data.user);
           setToken(data.access_token);
           setRefreshToken(data.refresh_token);
           setUser(data.user);
+          console.log('AuthContext: User state set to:', data.user);
           if (typeof window !== 'undefined') {
             localStorage.setItem('access_token', data.access_token);
             localStorage.setItem('refresh_token', data.refresh_token);
             localStorage.setItem('user', JSON.stringify(data.user));
+            console.log('AuthContext: User saved to localStorage');
           }
           return true;
         } else {
-          console.error('MongoDB login failed:', data.detail);
+          console.error('MongoDB login failed:', data.detail || data.message || 'Unknown error');
           // Fall back to mock login
         }
       } catch (apiError) {
@@ -143,10 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           username: 'admin',
           full_name: 'Admin User',
           is_superuser: true,
-          is_instructor: false,
-          role: 'admin',
-          is_active: true,
-          created_at: new Date().toISOString()
+          roles: ['admin']
         },
         'instructor@demo.com': {
           id: 2,
@@ -173,9 +174,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
 
       const defaultPasswords = {
-        'admin@demo.com': 'admin123',
-        'instructor@demo.com': 'instructor123',
-        'student@demo.com': 'student123'
+        'admin@demo.com': 'demo123',
+        'instructor@demo.com': 'demo123',
+        'student@demo.com': 'demo123'
       };
 
       // Get users from localStorage (registered users)
@@ -360,9 +361,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const storedUser = localStorage.getItem('user');
 
           if (storedToken && storedUser) {
+            console.log('AuthContext: Loading user from localStorage:', storedUser);
+            const parsedUser = JSON.parse(storedUser);
+            console.log('AuthContext: Parsed user:', parsedUser);
             setToken(storedToken);
             setRefreshToken(storedRefresh);
-            setUser(JSON.parse(storedUser));
+            setUser(parsedUser);
+            console.log('AuthContext: User loaded from localStorage successfully');
+          } else {
+            console.log('AuthContext: No stored user found in localStorage');
           }
         }
       } catch (error) {
