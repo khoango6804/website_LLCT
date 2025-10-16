@@ -28,15 +28,44 @@ import {
   TestTube
 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { API_ENDPOINTS, getFullUrl } from '@/lib/api';
+
+interface NewsArticle {
+  id: string;
+  title: string;
+  excerpt?: string;
+  featured_image?: string;
+  author_name: string;
+  published_at: string;
+  views: number;
+}
 
 export default function Home() {
   const { isAuthenticated, user, hasRole } = useAuth();
+  const [latestNews, setLatestNews] = useState<NewsArticle[]>([]);
+  const [loadingNews, setLoadingNews] = useState(false);
   
-  // Debug: Log user info (remove in production)
-  // console.log('Homepage - isAuthenticated:', isAuthenticated);
-  // console.log('Homepage - user:', user);
-  // console.log('Homepage - hasRole admin:', hasRole('admin'));
+  // Fetch latest news
+  useEffect(() => {
+    const fetchLatestNews = async () => {
+      try {
+        setLoadingNews(true);
+        const response = await fetch(getFullUrl(API_ENDPOINTS.NEWS_LATEST + '?limit=3'));
+        if (response.ok) {
+          const data = await response.json();
+          setLatestNews(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        console.error('Error fetching news:', error);
+        setLatestNews([]);
+      } finally {
+        setLoadingNews(false);
+      }
+    };
+
+    fetchLatestNews();
+  }, []);
 
   const features = [
     {
@@ -360,6 +389,75 @@ export default function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Latest News Section */}
+      <div className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center mb-16">
+            <div className="w-20 h-1 bg-[#49BBBD] mr-8"></div>
+            <h2 className="text-[54px] font-bold text-[#00CBB8] leading-[81px]" style={{fontFamily: 'SVN-Poppins'}}>
+              Tin tức mới nhất
+            </h2>
+          </div>
+          
+          {loadingNews ? (
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          ) : latestNews.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {latestNews.map((article) => (
+                <div key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  {article.featured_image && (
+                    <div className="h-48 bg-gray-200">
+                      <img
+                        src={article.featured_image}
+                        alt={article.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                      {article.title}
+                    </h3>
+                    {article.excerpt && (
+                      <p className="text-gray-600 mb-4 line-clamp-3">
+                        {article.excerpt}
+                      </p>
+                    )}
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center space-x-4">
+                        <span>Bởi {article.author_name}</span>
+                        <span>{article.views} lượt xem</span>
+                      </div>
+                      <span>{new Date(article.published_at).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-medium text-gray-900 mb-2">Chưa có tin tức nào</h3>
+              <p className="text-gray-600">Các tin tức mới sẽ được cập nhật sớm</p>
+            </div>
+          )}
+          
+          {latestNews.length > 0 && (
+            <div className="text-center mt-12">
+              <Link
+                href="/news"
+                className="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
+              >
+                <span>Xem tất cả tin tức</span>
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -91,15 +91,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Try MongoDB API first
       try {
+        const formData = new FormData();
+        formData.append('username', email); // Backend expects username but uses it as email
+        formData.append('password', password);
+        
         const response = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password,
-          }),
+          body: formData,
         });
 
         const data = await response.json();

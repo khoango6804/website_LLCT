@@ -1,14 +1,27 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Star, Mail, Phone } from 'lucide-react';
+import { API_ENDPOINTS, getFullUrl } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
-export default function TestAttemptPage({ params }: { params: { id: string } }) {
-  const [timeLeft, setTimeLeft] = useState(3600); // 1 hour in seconds
+export default function TestAttemptPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const searchParams = useSearchParams();
+  const assessmentId = searchParams.get('assessmentId');
+  const { authFetch, user } = useAuth();
+  const router = useRouter();
+  
+  const [timeLeft, setTimeLeft] = useState(3600); // Will be updated from assessment data
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<{ [key: number]: number }>({});
+  const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [markedQuestions, setMarkedQuestions] = useState<Set<number>>(new Set());
+  const [questions, setQuestions] = useState<any[]>([]);
+  const [assessment, setAssessment] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const subjectInfo = {
     'mln111': { code: 'MLN111', name: 'Kỹ năng mềm cơ bản' },
@@ -18,59 +31,51 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
     'vnr202': { code: 'VNR202', name: 'Văn hóa doanh nghiệp' }
   };
 
-  const currentSubject = subjectInfo[params.id as keyof typeof subjectInfo] || subjectInfo.mln111;
+  const currentSubject = subjectInfo[resolvedParams.id as keyof typeof subjectInfo] || subjectInfo.mln111;
 
-  const questions = [
-    {
-      id: 1,
-      question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-      options: ["Câu trả lời 1", "Câu trả lời 2", "Câu trả lời 3", "Câu trả lời 4"],
-      points: 1
-    },
-    {
-      id: 2,
-      question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      options: ["Câu trả lời 1", "Câu trả lời 2", "Câu trả lời 3", "Câu trả lời 4"],
-      points: 1
-    },
-    {
-      id: 3,
-      question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      options: ["Câu trả lời 1", "Câu trả lời 2", "Câu trả lời 3", "Câu trả lời 4"],
-      points: 1
-    },
-    {
-      id: 4,
-      question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      options: ["Câu trả lời 1", "Câu trả lời 2", "Câu trả lời 3", "Câu trả lời 4"],
-      points: 1
-    },
-    {
-      id: 5,
-      question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      options: ["Câu trả lời 1", "Câu trả lời 2", "Câu trả lời 3", "Câu trả lời 4"],
-      points: 1
-    },
-    {
-      id: 6,
-      question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      options: ["Câu trả lời 1", "Câu trả lời 2", "Câu trả lời 3", "Câu trả lời 4"],
-      points: 1
-    },
-    {
-      id: 7,
-      question: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      options: ["Câu trả lời 1", "Câu trả lời 2", "Câu trả lời 3", "Câu trả lời 4"],
-      points: 1
-    }
-  ];
+  // Load assessment and questions
+  useEffect(() => {
+    const loadAssessmentData = async () => {
+      if (!assessmentId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Load assessment details
+        const assessmentRes = await authFetch(getFullUrl(API_ENDPOINTS.MONGO_ASSESSMENT_DETAIL(assessmentId)));
+        const assessmentData = await assessmentRes.json();
+        setAssessment(assessmentData);
+
+        // Load questions
+        const questionsRes = await authFetch(getFullUrl(API_ENDPOINTS.MONGO_ASSESSMENT_QUESTIONS(assessmentId)));
+        const questionsData = await questionsRes.json();
+        setQuestions(questionsData);
+
+        // Set timer from assessment data
+        if (assessmentData.time_limit_minutes) {
+          setTimeLeft(assessmentData.time_limit_minutes * 60);
+        }
+      } catch (error) {
+        console.error('Error loading assessment:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAssessmentData();
+  }, [assessmentId, authFetch]);
 
   // Timer countdown
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        if (prev <= 0) {
+        if (prev <= 1) {
           clearInterval(timer);
+          // Auto-submit when time runs out
+          if (!submitting && questions.length > 0) {
+            handleSubmit();
+          }
           return 0;
         }
         return prev - 1;
@@ -78,7 +83,7 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [submitting, questions.length]);
 
   const formatTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
@@ -87,14 +92,110 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handleAnswerChange = (questionId: number, answerIndex: number) => {
+  const calculateScore = () => {
+    let correctAnswers = 0;
+    const totalQuestions = questions.length;
+
+    questions.forEach((question, index) => {
+      const questionId = question._id || index.toString();
+      const userAnswer = answers[questionId];
+      const correctAnswer = question.correct_answer;
+
+      if (userAnswer && correctAnswer && userAnswer === correctAnswer) {
+        correctAnswers++;
+      }
+    });
+
+    const score = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
+    return {
+      score: Math.round(score * 100) / 100, // Round to 2 decimal places
+      correctAnswers,
+      totalQuestions
+    };
+  };
+
+  const handleSubmit = async () => {
+    if (submitting) return;
+
+    const confirmSubmit = window.confirm(
+      `Bạn có chắc chắn muốn nộp bài?\n\nSố câu đã trả lời: ${Object.keys(answers).length}/${questions.length}\nThời gian còn lại: ${formatTime(timeLeft)}`
+    );
+
+    if (!confirmSubmit) return;
+
+    setSubmitting(true);
+
+    try {
+      const { score, correctAnswers, totalQuestions } = calculateScore();
+      
+      // Save result to backend
+      const resultData = {
+        student_id: user?.id || 'anonymous',
+        student_name: user?.full_name || user?.email || 'Anonymous',
+        assessment_id: assessmentId,
+        assessment_title: assessment.title,
+        subject_code: assessment.subject_code,
+        subject_name: assessment.subject_name,
+        answers: answers,
+        score: score,
+        correct_answers: correctAnswers,
+        total_questions: totalQuestions,
+        time_taken: (assessment.time_limit_minutes * 60) - timeLeft,
+        max_time: assessment.time_limit_minutes * 60
+      };
+
+      // Save to database via API
+      try {
+        const response = await authFetch(getFullUrl(API_ENDPOINTS.ASSESSMENT_RESULTS), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(resultData)
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save result to database');
+        }
+
+        const savedResult = await response.json();
+        console.log('Result saved successfully:', savedResult);
+      } catch (apiError) {
+        console.error('Error saving to API, falling back to localStorage:', apiError);
+        // Fallback to localStorage if API fails
+        const existingResults = JSON.parse(localStorage.getItem('assessment_results') || '[]');
+        existingResults.push({...resultData, completed_at: new Date().toISOString()});
+        localStorage.setItem('assessment_results', JSON.stringify(existingResults));
+      }
+
+      // Redirect to result page with score data
+      const resultParams = new URLSearchParams({
+        assessmentId: assessmentId || '',
+        score: score.toString(),
+        correctAnswers: correctAnswers.toString(),
+        totalQuestions: totalQuestions.toString(),
+        timeTaken: ((assessment.time_limit_minutes * 60) - timeLeft).toString()
+      });
+
+      router.push(`/exercises/${resolvedParams.id}/result?${resultParams.toString()}`);
+    } catch (error) {
+      console.error('Error submitting assessment:', error);
+      alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleAnswerChange = (questionIndex: number, answer: string) => {
+    const questionId = questions[questionIndex]?._id || questionIndex.toString();
     setAnswers(prev => ({
       ...prev,
-      [questionId]: answerIndex
+      [questionId]: answer
     }));
   };
 
-  const handleClearAnswer = (questionId: number) => {
+  const handleClearAnswer = (questionIndex: number) => {
+    const questionId = questions[questionIndex]?._id || questionIndex.toString();
     setAnswers(prev => {
       const newAnswers = { ...prev };
       delete newAnswers[questionId];
@@ -102,20 +203,21 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
     });
   };
 
-  const handleMarkQuestion = (questionId: number) => {
+  const handleMarkQuestion = (questionIndex: number) => {
     setMarkedQuestions(prev => {
       const newMarked = new Set(prev);
-      if (newMarked.has(questionId)) {
-        newMarked.delete(questionId);
+      if (newMarked.has(questionIndex)) {
+        newMarked.delete(questionIndex);
       } else {
-        newMarked.add(questionId);
+        newMarked.add(questionIndex);
       }
       return newMarked;
     });
   };
 
-  const getQuestionStatus = (questionId: number) => {
-    if (questionId === currentQuestion + 1) return 'current';
+  const getQuestionStatus = (questionIndex: number) => {
+    if (questionIndex === currentQuestion) return 'current';
+    const questionId = questions[questionIndex]?._id || questionIndex.toString();
     if (answers[questionId] !== undefined) return 'answered';
     return 'unanswered';
   };
@@ -129,21 +231,42 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
     }
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!assessmentId || !assessment || questions.length === 0) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Không tìm thấy bài kiểm tra</h2>
+          <Link href={`/exercises/${resolvedParams.id}`} className="text-blue-600 hover:underline">
+            Quay lại danh sách
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href={`/exercises/${params.id}`} className="flex items-center">
+            <Link href={`/exercises/${resolvedParams.id}`} className="flex items-center">
               <ArrowLeft className="h-6 w-6 text-gray-600 hover:text-gray-800 transition-colors" />
             </Link>
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-900">{currentSubject.code}</h1>
               <div className="text-sm text-gray-600 space-y-1">
-                <div>Tuần 1</div>
-                <div>Chương 1: Tư tưởng Hồ Chí Minh</div>
-                <div>Lần 2</div>
+                <div>{assessment.title}</div>
+                <div>{currentSubject.name}</div>
+                <div>{questions.length} câu hỏi</div>
               </div>
             </div>
             <div className="w-6"></div> {/* Spacer for centering */}
@@ -158,51 +281,61 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
           <div className="lg:col-span-3">
             <div className="space-y-6">
               {questions.map((question, index) => (
-                <div key={question.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                <div key={question._id || index} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                   {/* Question Header */}
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Câu {question.id}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Câu {index + 1}</h3>
                     <span className="text-sm font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                      {question.points} điểm
+                      1 điểm
                     </span>
                   </div>
 
                   {/* Question Content */}
                   <p className="text-gray-700 mb-6 leading-relaxed">
-                    {question.question}
+                    {question.question_text}
                   </p>
 
                   {/* Answer Options */}
                   <div className="space-y-3 mb-6">
-                    {question.options.map((option, optionIndex) => (
-                      <label key={optionIndex} className="flex items-center space-x-3 cursor-pointer">
-                        <input
-                          type="radio"
-                          name={`question-${question.id}`}
-                          value={optionIndex}
-                          checked={answers[question.id] === optionIndex}
-                          onChange={() => handleAnswerChange(question.id, optionIndex)}
-                          className="w-4 h-4 text-teal-600 focus:ring-teal-500 border-gray-300"
-                        />
-                        <span className="text-gray-700">{option}</span>
-                      </label>
-                    ))}
+                    {question.options && question.options.length > 0 ? (
+                      question.options.map((option: string, optionIndex: number) => (
+                        <label key={optionIndex} className="flex items-center space-x-3 cursor-pointer">
+                          <input
+                            type="radio"
+                            name={`question-${question._id || index}`}
+                            value={option}
+                            checked={answers[question._id || index] === option}
+                            onChange={() => handleAnswerChange(index, option)}
+                            className="w-4 h-4 text-teal-600 focus:ring-teal-500 border-gray-300"
+                          />
+                          <span className="text-gray-700">{option}</span>
+                        </label>
+                      ))
+                    ) : (
+                      <input
+                        type="text"
+                        placeholder="Nhập câu trả lời của bạn"
+                        value={answers[question._id || index] || ''}
+                        onChange={(e) => handleAnswerChange(index, e.target.value)}
+                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                      />
+                    )}
                   </div>
 
                   {/* Action Buttons */}
                   <div className="flex justify-between items-center">
                     <button
-                      onClick={() => handleClearAnswer(question.id)}
+                      onClick={() => handleClearAnswer(index)}
                       className="text-gray-600 hover:text-gray-800 transition-colors"
                     >
                       Xóa câu trả lời
                     </button>
                     <button
-                      onClick={() => handleMarkQuestion(question.id)}
+                      onClick={() => handleMarkQuestion(index)}
                       className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
                     >
                       <Star 
-                        className={`h-4 w-4 ${markedQuestions.has(question.id) ? 'text-yellow-500 fill-current' : ''}`} 
+                        className={`h-4 w-4 ${markedQuestions.has(index) ? 'text-yellow-500 fill-current' : ''}`} 
                       />
                       <span>Đánh dấu câu hỏi</span>
                     </button>
@@ -233,10 +366,10 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
                   Điều hướng câu hỏi
                 </h3>
                 <div className="grid grid-cols-4 gap-2">
-                  {Array.from({ length: 16 }, (_, index) => {
+                  {questions.map((_, index) => {
                     const questionNumber = index + 1;
-                    const status = getQuestionStatus(questionNumber);
-                    const isMarked = markedQuestions.has(questionNumber);
+                    const status = getQuestionStatus(index);
+                    const isMarked = markedQuestions.has(index);
                     
                     return (
                       <button
@@ -255,8 +388,16 @@ export default function TestAttemptPage({ params }: { params: { id: string } }) 
               </div>
 
               {/* Submit Button */}
-              <button className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md">
-                Nộp bài
+              <button 
+                onClick={handleSubmit}
+                disabled={submitting || questions.length === 0}
+                className={`w-full py-3 px-6 rounded-lg font-medium transition-colors shadow-md ${
+                  submitting || questions.length === 0
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {submitting ? 'Đang nộp bài...' : 'Nộp bài'}
               </button>
             </div>
           </div>

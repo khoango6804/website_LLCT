@@ -20,12 +20,12 @@ export default function AdminDashboardPage() {
   const { user } = useAuth();
 
   const sidebarItems = [
-    { id: 'dashboard', title: 'Bảng tổng kết', icon: BarChart3, color: '#125093' },
-    { id: 'ai-data', title: 'Dữ liệu AI', icon: Brain, color: '#00CBB8' },
-    { id: 'library', title: 'Thư viện môn học', icon: BookOpen, color: '#5B72EE' },
-    { id: 'products', title: 'Sản phẩm học tập', icon: FileText, color: '#F48C06', active: true },
-    { id: 'tests', title: 'Bài kiểm tra', icon: FileText, color: '#29B9E7' },
-    { id: 'news', title: 'Tin tức', icon: MessageSquare, color: '#00CBB8' }
+    { id: 'dashboard', title: 'Bảng tổng kết', icon: BarChart3, color: '#125093', href: '/admin/dashboard', active: true },
+    { id: 'ai-data', title: 'Dữ liệu AI', icon: Brain, color: '#00CBB8', href: '/admin/ai-data' },
+    { id: 'library', title: 'Thư viện môn học', icon: BookOpen, color: '#5B72EE', href: '/admin/library' },
+    { id: 'products', title: 'Sản phẩm học tập', icon: FileText, color: '#F48C06', href: '/admin/products' },
+    { id: 'tests', title: 'Bài kiểm tra', icon: FileText, color: '#29B9E7', href: '/admin/tests' },
+    { id: 'news', title: 'Tin tức', icon: MessageSquare, color: '#00CBB8', href: '/admin/news' }
   ];
 
   const courses = [
@@ -71,46 +71,35 @@ export default function AdminDashboardPage() {
     <ProtectedRoute requiredRole="admin">
       <div className="min-h-screen bg-white flex">
         {/* Sidebar */}
-        <div className="w-[270px] bg-white p-6">
+        <div className="w-56 bg-white p-4 border-r border-gray-100">
           {/* Logo */}
-          <div className="mb-8">
+          <div className="mb-6">
             <img 
               src="https://placehold.co/192x192" 
               alt="Logo" 
-              className="w-48 h-48 mb-8"
+              className="w-24 h-24 md:w-32 md:h-32 mb-6"
             />
           </div>
 
           {/* Sidebar Menu */}
-          <div className="space-y-12">
+          <div className="space-y-8">
             {sidebarItems.map((item, index) => {
               const Icon = item.icon;
               const isActive = item.active;
               return (
-                <div 
-                  key={item.id} 
-                  className="flex items-center gap-6"
+                <Link
+                  key={item.id}
+                  href={item.href}
+                  className="flex items-center gap-4 hover:opacity-90"
                 >
-                  <div 
-                    className="w-9 h-9 flex items-center justify-center"
+                  <div
+                    className="w-8 h-8 flex items-center justify-center rounded"
                     style={{ backgroundColor: item.color }}
                   >
-                    <Icon className="w-6 h-6 text-white" />
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <div 
-                    className="flex-1"
-                    style={{ 
-                      color: '#010514', 
-                      fontSize: 20, 
-                      fontFamily: 'SVN-Gilroy', 
-                      fontWeight: isActive ? '700' : '400', 
-                      lineHeight: isActive ? 32 : 30, 
-                      wordWrap: 'break-word' 
-                    }}
-                  >
-                    {item.title}
-                  </div>
-                </div>
+                  <div className={`flex-1 text-sm md:text-base ${isActive ? 'font-bold text-gray-900' : 'font-medium text-gray-800'}`}>{item.title}</div>
+                </Link>
               );
             })}
           </div>
@@ -119,72 +108,28 @@ export default function AdminDashboardPage() {
         {/* Main Content */}
         <div className="flex-1 bg-white">
           {/* Header */}
-          <div className="flex items-center gap-12 p-6">
-            <div className="w-32 h-32 bg-gray-300 rounded-full"></div>
+          <div className="flex items-center gap-6 md:gap-8 p-4 md:p-6">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-gray-300 rounded-full"></div>
             <div className="flex-1">
               <div className="mb-1">
-                <span style={{ 
-                  color: '#010514', 
-                  fontSize: 24, 
-                  fontFamily: 'SVN-Gilroy', 
-                  fontWeight: '400', 
-                  lineHeight: 38.40, 
-                  wordWrap: 'break-word' 
-                }}>
-                  Chào mừng, 
-                </span>
-                <span style={{ 
-                  color: '#125093', 
-                  fontSize: 32, 
-                  fontFamily: 'SVN-Poppins', 
-                  fontWeight: '700', 
-                  lineHeight: 48, 
-                  wordWrap: 'break-word' 
-                }}>
-                  Nguyễn Văn Bình
-                </span>
+                <span className="text-gray-900 text-base md:text-lg">Chào mừng, </span>
+                <span className="text-[#125093] text-xl md:text-2xl font-bold">Nguyễn Văn Bình</span>
               </div>
               <div className="flex items-center gap-3">
-                <div style={{ 
-                  color: '#010514', 
-                  fontSize: 24, 
-                  fontFamily: 'SVN-Gilroy', 
-                  fontWeight: '700', 
-                  lineHeight: 38.40, 
-                  wordWrap: 'break-word' 
-                }}>
-                  Quản trị viên
-                </div>
-                <Edit className="w-8 h-8 text-[#1A1A1A]" />
+                <div className="text-gray-900 text-base md:text-lg font-semibold">Quản trị viên</div>
+                <Edit className="w-5 h-5 md:w-6 md:h-6 text-[#1A1A1A]" />
               </div>
             </div>
           </div>
 
           {/* Main Content Area */}
-          <div className="px-6 pb-20">
+          <div className="px-4 md:px-6 pb-12 md:pb-16">
             {/* Title and Update Button */}
-            <div className="flex items-center justify-between mb-8">
-              <h1 style={{ 
-                color: '#010514', 
-                fontSize: 48, 
-                fontFamily: 'SVN-Poppins', 
-                fontWeight: '700', 
-                lineHeight: 62.40, 
-                wordWrap: 'break-word' 
-              }}>
-                Sản phẩm học tập
-              </h1>
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Sản phẩm học tập</h1>
               <button 
                 onClick={() => console.log('Update clicked')}
-                className="px-5 py-5 bg-[#125093] rounded-full shadow-lg"
-                style={{ 
-                  color: 'white', 
-                  fontSize: 22, 
-                  fontFamily: 'SVN-Gilroy', 
-                  fontWeight: '600', 
-                  letterSpacing: 0.44, 
-                  wordWrap: 'break-word' 
-                }}
+                className="px-4 py-2 bg-[#125093] text-white text-sm md:text-base rounded-full shadow"
               >
                 Cập nhập
               </button>
@@ -193,77 +138,34 @@ export default function AdminDashboardPage() {
             {/* Course Sections */}
             <div className="space-y-12">
               {courses.map((course, courseIndex) => (
-                <div key={course.code} className="space-y-8">
+                <div key={course.code} className="space-y-6">
                   {/* Course Title */}
-                  <h2 style={{ 
-                    color: 'black', 
-                    fontSize: 28, 
-                    fontFamily: 'SVN-Poppins', 
-                    fontWeight: '700', 
-                    lineHeight: 36.40, 
-                    wordWrap: 'break-word' 
-                  }}>
-                    {course.code}
-                  </h2>
+                  <h2 className="text-lg md:text-xl font-bold text-black">{course.code}</h2>
 
                   {/* Products Grid */}
                   {course.products.length > 0 ? (
-                    <div className="space-y-12">
-                      <div className="flex items-center gap-5">
+                    <div className="space-y-8">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         {course.products.map((product, productIndex) => (
                           <div 
                             key={product.id}
-                            className="bg-white rounded-2xl shadow-lg pb-8 flex flex-col gap-8"
+                            className="bg-white rounded-2xl shadow-sm border border-gray-100 pb-6 flex flex-col gap-4"
                           >
                             <div className="flex flex-col gap-6">
                               <img 
                                 src={product.image} 
                                 alt={product.title}
-                                className="w-[415px] h-60 rounded-t-2xl"
+                                className="w-full h-40 sm:h-44 md:h-48 object-cover rounded-t-2xl"
                               />
                               <div className="px-6 flex flex-col gap-3">
                                 <div className="flex items-center justify-between h-8">
-                                  <div style={{ 
-                                    color: '#010514', 
-                                    fontSize: 20, 
-                                    fontFamily: 'SVN-Gilroy', 
-                                    fontWeight: '700', 
-                                    lineHeight: 32, 
-                                    wordWrap: 'break-word' 
-                                  }}>
-                                    {product.title}
-                                  </div>
-                                  <div style={{ 
-                                    color: '#010514', 
-                                    fontSize: 14, 
-                                    fontFamily: 'SVN-Gilroy', 
-                                    fontWeight: '400', 
-                                    lineHeight: 16.80, 
-                                    wordWrap: 'break-word' 
-                                  }}>
-                                    {product.code}
-                                  </div>
+                                  <div className="text-gray-900 text-base font-semibold">{product.title}</div>
+                                  <div className="text-gray-700 text-xs font-medium">{product.code}</div>
                                 </div>
                                 <div className="flex flex-col gap-3">
-                                  <div style={{ 
-                                    color: '#5B5B5B', 
-                                    fontSize: 16, 
-                                    fontFamily: 'SVN-Gilroy', 
-                                    fontWeight: '400', 
-                                    wordWrap: 'break-word' 
-                                  }}>
-                                    {product.instructor}
-                                  </div>
+                                  <div className="text-gray-500 text-sm">{product.instructor}</div>
                                   <div className="flex items-center justify-center gap-2">
-                                    <div style={{ 
-                                      color: '#5B5B5B', 
-                                      fontSize: 16, 
-                                      fontFamily: 'SVN-Gilroy', 
-                                      fontWeight: '400', 
-                                      wordWrap: 'break-word' 
-                                    }}>
-                                      {product.date}
-                                    </div>
+                                    <div className="text-gray-500 text-sm">{product.date}</div>
                                   </div>
                                 </div>
                               </div>
@@ -271,14 +173,7 @@ export default function AdminDashboardPage() {
                             <div className="px-6 flex items-center justify-between">
                               <button 
                                 onClick={() => console.log('Edit clicked', product.id)}
-                                className="px-5 py-3 bg-[#49BBBD] rounded-full shadow-lg"
-                                style={{ 
-                                  color: 'white', 
-                                  fontSize: 20, 
-                                  fontFamily: 'SVN-Gilroy', 
-                                  fontWeight: '600', 
-                                  wordWrap: 'break-word' 
-                                }}
+                                className="px-4 py-2 bg-[#49BBBD] text-white text-sm rounded-full shadow"
                               >
                                 Chỉnh sửa
                               </button>
@@ -286,7 +181,7 @@ export default function AdminDashboardPage() {
                                 onClick={() => console.log('Delete clicked', product.id)}
                                 className="w-8 h-8 flex items-center justify-center hover:bg-red-50 rounded"
                               >
-                                <Trash2 className="w-6 h-6 text-[#1A1A1A]" />
+                                <Trash2 className="w-5 h-5 text-[#1A1A1A]" />
                               </button>
                             </div>
                           </div>
@@ -294,77 +189,39 @@ export default function AdminDashboardPage() {
                       </div>
                       
                       {/* Pagination */}
-                      <div className="flex items-center justify-center gap-6">
+                      <div className="flex items-center justify-center gap-4">
                         <button 
                           onClick={() => console.log('Previous page')}
-                          className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-100"
+                          className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-100"
                         >
-                          <ChevronLeft className="w-6 h-6 text-[#AEACAC]" />
+                          <ChevronLeft className="w-5 h-5 text-[#AEACAC]" />
                         </button>
-                        <span style={{ 
-                          color: '#010514', 
-                          fontSize: 24, 
-                          fontFamily: 'SVN-Gilroy', 
-                          fontWeight: '700', 
-                          lineHeight: 38.40, 
-                          wordWrap: 'break-word' 
-                        }}>1</span>
-                        <span style={{ 
-                          color: '#010514', 
-                          fontSize: 24, 
-                          fontFamily: 'SVN-Gilroy', 
-                          fontWeight: '400', 
-                          lineHeight: 38.40, 
-                          wordWrap: 'break-word' 
-                        }}>2</span>
-                        <span style={{ 
-                          color: '#010514', 
-                          fontSize: 24, 
-                          fontFamily: 'SVN-Gilroy', 
-                          fontWeight: '400', 
-                          lineHeight: 38.40, 
-                          wordWrap: 'break-word' 
-                        }}>3</span>
+                        <span className="text-gray-900 text-base font-bold">1</span>
+                        <span className="text-gray-900 text-base">2</span>
+                        <span className="text-gray-900 text-base">3</span>
                         <button 
                           onClick={() => console.log('Next page')}
-                          className="w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-100"
+                          className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-gray-100"
                         >
-                          <ChevronRight className="w-6 h-6 text-[#010514]" />
+                          <ChevronRight className="w-5 h-5 text-[#010514]" />
                         </button>
                       </div>
                     </div>
                   ) : (
                     /* Empty State */
                     <div className="flex items-center gap-5">
-                      <div className="bg-white rounded-2xl shadow-lg pb-8 flex flex-col gap-8">
+                      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 pb-6 flex flex-col gap-6">
                         <div className="flex flex-col gap-6">
-                          <div className="w-[415px] h-60 bg-[#C4C4C4] rounded-t-2xl"></div>
-                          <div className="w-25 h-25 mx-auto">
-                            <div className="w-20 h-20 border-4 border-[#5B5B5B] rounded-full"></div>
+                          <div className="w-full sm:w-[360px] h-40 bg-[#C4C4C4] rounded-t-2xl"></div>
+                          <div className="w-20 h-20 mx-auto">
+                            <div className="w-16 h-16 border-4 border-[#5B5B5B] rounded-full"></div>
                           </div>
                           <div className="px-6 flex flex-col gap-3">
                             <div className="h-8 flex flex-col justify-start gap-4">
-                              <div style={{ 
-                                color: '#010514', 
-                                fontSize: 20, 
-                                fontFamily: 'SVN-Gilroy', 
-                                fontWeight: '700', 
-                                lineHeight: 32, 
-                                wordWrap: 'break-word' 
-                              }}>
-                                Chưa có sản phẩm
-                              </div>
+                              <div className="text-gray-900 text-base font-semibold">Chưa có sản phẩm</div>
                             </div>
                             <div className="flex flex-col gap-3">
-                              <div style={{ 
-                                color: '#5B5B5B', 
-                                fontSize: 16, 
-                                fontFamily: 'SVN-Gilroy', 
-                                fontWeight: '400', 
-                                wordWrap: 'break-word' 
-                              }}>
-                                Hiện tại môn học này chưa có sản phẩm học tập nào, hãy cập nhập ngay !
-                              </div>
+                              <div className="text-gray-500 text-sm">Hiện tại môn học này chưa có sản phẩm học tập nào, hãy cập nhập ngay !</div>
                             </div>
                           </div>
                         </div>
@@ -380,98 +237,43 @@ export default function AdminDashboardPage() {
 
       {/* Footer */}
       <div 
-        className="w-full py-15 bg-[#125093] flex flex-col items-center gap-20"
-        style={{ paddingTop: 60, paddingBottom: 60 }}
+        className="w-full bg-[#125093] flex flex-col items-center"
+        style={{ paddingTop: 40, paddingBottom: 40 }}
       >
-        <div className="w-[1386px] h-[504px] flex flex-col justify-between items-center">
-          <div className="flex items-center gap-11">
+        <div className="w-full max-w-7xl flex flex-col justify-between items-center gap-8 px-4">
+          <div className="flex items-center gap-6">
             <img 
               src="https://placehold.co/112x112" 
               alt="Logo" 
-              className="w-28 h-28"
+              className="w-14 h-14 md:w-20 md:h-20"
             />
             <div 
-              className="w-20 h-0 border border-white border-opacity-30"
+              className="w-16 h-0 border border-white border-opacity-30"
               style={{ transform: 'rotate(90deg)' }}
             ></div>
-            <div style={{ 
-              width: 240, 
-              color: 'white', 
-              fontSize: 24, 
-              fontFamily: 'Arimo', 
-              fontWeight: '400', 
-              lineHeight: 38.40, 
-              wordWrap: 'break-word' 
-            }}>
-              Soft Skill Department         Trường ĐH FPT
-            </div>
+            <div className="text-white text-sm md:text-base">Soft Skill Department         Trường ĐH FPT</div>
           </div>
           
-          <div className="w-full flex flex-col items-center gap-14">
-            <div 
-              className="w-full text-center"
-              style={{ 
-                color: 'rgba(255, 255, 255, 0.30)', 
-                fontSize: 24, 
-                fontFamily: 'Arimo', 
-                fontWeight: '400', 
-                lineHeight: 38.40, 
-                wordWrap: 'break-word' 
-              }}
-            >
-              Nếu bạn có thắc mắc hay cần giúp đỡ, liên hệ ngay
-            </div>
+          <div className="w-full flex flex-col items-center gap-8">
+            <div className="w-full text-center text-white/70 text-sm md:text-base">Nếu bạn có thắc mắc hay cần giúp đỡ, liên hệ ngay</div>
             
-            <div className="w-full flex justify-between items-center">
-              <div style={{ 
-                color: 'white', 
-                fontSize: 20, 
-                fontFamily: 'SVN-Gilroy', 
-                fontWeight: '400', 
-                lineHeight: 30, 
-                wordWrap: 'break-word' 
-              }}>
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+              <div className="text-white text-sm md:text-base">
                 Văn phòng Bộ môn Kỹ năng mềm          Địa chỉ: <br/>
                 Email: vanbinh@fpt.edu.vn          Zalo: 090.xxx.xxx
               </div>
-              <div style={{ 
-                color: 'white', 
-                fontSize: 20, 
-                fontFamily: 'SVN-Gilroy', 
-                fontWeight: '400', 
-                lineHeight: 30, 
-                wordWrap: 'break-word' 
-              }}>
+              <div className="text-white text-sm md:text-base">
                 Thầy Văn Bình          Chức vụ: <br/>
                 Email: vanbinh@fpt.edu.vn          Zalo: 090.xxx.xxx
               </div>
-              <div style={{ 
-                color: 'white', 
-                fontSize: 20, 
-                fontFamily: 'SVN-Gilroy', 
-                fontWeight: '400', 
-                lineHeight: 30, 
-                wordWrap: 'break-word' 
-              }}>
+              <div className="text-white text-sm md:text-base">
                 Thầy Văn Bình          Chức vụ<br/>
                 Email: vanbinh@fpt.edu.vn          Zalo: 090.xxx.xxx
               </div>
             </div>
           </div>
           
-          <div 
-            className="w-full text-center"
-            style={{ 
-              color: 'rgba(255, 255, 255, 0.30)', 
-              fontSize: 24, 
-              fontFamily: 'Arimo', 
-              fontWeight: '400', 
-              lineHeight: 38.40, 
-              wordWrap: 'break-word' 
-            }}
-          >
-            Soft Skills Department | Trường Đại học FPT
-          </div>
+          <div className="w-full text-center text-white/70 text-sm md:text-base">Soft Skills Department | Trường Đại học FPT</div>
         </div>
       </div>
     </ProtectedRoute>

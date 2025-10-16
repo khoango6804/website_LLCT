@@ -1,18 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { API_ENDPOINTS, getFullUrl } from '@/lib/api';
+import { useAuth } from '@/contexts/AuthContext';
 
-export default function ExerciseDetailPage() {
-  const params = useParams();
-  const subjectId = params.id as string;
+export default function ExerciseDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
+  const subjectId = resolvedParams.id as string;
+  const { authFetch } = useAuth();
   
   const [currentPage, setCurrentPage] = useState(1);
+  const [assessments, setAssessments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   
-  // Mock data for subject details
+  // Subject details mapping
   const subjectDetails = {
     'mln111': {
       code: 'MLN111',
@@ -43,30 +47,23 @@ export default function ExerciseDetailPage() {
 
   const subject = subjectDetails[subjectId as keyof typeof subjectDetails] || subjectDetails['mln111'];
 
-  // Mock test data
-  const testCards = [
-    {
-      id: 1,
-      title: 'Tên bài kiểm tra',
-      instructor: 'Nguyễn Văn Bình',
-      date: '20 / 00 / 20xx',
-      attempt: 'Lần 1'
-    },
-    {
-      id: 2,
-      title: 'Tên bài kiểm tra',
-      instructor: 'Nguyễn Văn Bình', 
-      date: '20 / 00 / 20xx',
-      attempt: 'Lần 1'
-    },
-    {
-      id: 3,
-      title: 'Tên bài kiểm tra',
-      instructor: 'Nguyễn Văn Bình',
-      date: '20 / 00 / 20xx', 
-      attempt: 'Lần 1'
-    }
-  ];
+  // Load published assessments for this subject
+  useEffect(() => {
+    const fetchAssessments = async () => {
+      try {
+        const subjectCode = subject.code;
+        const res = await authFetch(`${getFullUrl(API_ENDPOINTS.MONGO_ASSESSMENTS)}?subject_code=${subjectCode}&published_only=true`);
+        const data = await res.json();
+        setAssessments(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error('Failed to load assessments', e);
+        setAssessments([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAssessments();
+  }, [subject.code, authFetch]);
 
   return (
     <ProtectedRoute>
@@ -140,54 +137,70 @@ export default function ExerciseDetailPage() {
                 </h2>
                 
                 <div className="w-[1430px] flex flex-col gap-[64px]">
-                  {/* Week 1 */}
+                  {/* Assessments */}
                   <div className="flex flex-col items-center gap-[48px]">
                     <h3 className="w-full text-[28px] font-bold text-black leading-[36.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
-                      Tuần 1
+                      Bài kiểm tra
                     </h3>
-                    <div className="w-full flex justify-between items-center">
-                      {testCards.map((test) => (
-                        <div key={test.id} className="w-[415px] flex flex-col">
-                          {/* Icon */}
-                          <div className="pl-[30px] flex justify-start items-start gap-[10px]">
-                            <div className="p-5 bg-[#29B9E7] rounded-[12px] flex justify-start items-start gap-[10px]">
-                              <div className="w-[34px] h-[34px] relative overflow-hidden">
-                                <div className="w-[34px] h-[34px] left-0 top-0 absolute overflow-hidden">
-                                  <div className="w-[28.68px] h-[28.66px] left-[2.12px] top-[2.12px] absolute bg-white"></div>
+                    
+                    {loading ? (
+                      <div className="text-center py-12">
+                        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto"></div>
+                        <p className="mt-4 text-gray-600">Đang tải bài kiểm tra...</p>
+                      </div>
+                    ) : assessments.length === 0 ? (
+                      <div className="text-center py-12">
+                        <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-xl font-medium text-gray-900 mb-2">Chưa có bài kiểm tra</h3>
+                        <p className="text-gray-600">Môn học này chưa có bài kiểm tra nào được đăng.</p>
+                      </div>
+                    ) : (
+                      <div className="w-full flex justify-between items-center flex-wrap gap-6">
+                        {assessments.map((assessment) => (
+                          <Link
+                            key={assessment._id}
+                            href={`/exercises/${subjectId}/attempt?assessmentId=${assessment._id}`}
+                            className="w-[415px] flex flex-col"
+                          >
+                            {/* Icon */}
+                            <div className="pl-[30px] flex justify-start items-start gap-[10px]">
+                              <div className="p-5 bg-[#29B9E7] rounded-[12px] flex justify-start items-start gap-[10px]">
+                                <div className="w-[34px] h-[34px] relative overflow-hidden">
+                                  <FileText className="w-[28px] h-[28px] text-white" />
                                 </div>
                               </div>
                             </div>
-                          </div>
-                          
-                          {/* Card */}
-                          <div className="w-full pt-[80px] pb-[32px] px-[50px] bg-white shadow-[4px_4px_15px_#9DA1A6] rounded-[12px] flex flex-col items-end gap-[20px]">
-                            <div className="w-full flex flex-col gap-[8px]">
-                              <h4 className="w-full text-[#010514] text-[28px] font-bold leading-[36.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
-                                {test.title}
-                              </h4>
+                            
+                            {/* Card */}
+                            <div className="w-full pt-[80px] pb-[32px] px-[50px] bg-white shadow-[4px_4px_15px_#9DA1A6] rounded-[12px] flex flex-col items-end gap-[20px] hover:shadow-lg transition-shadow">
+                              <div className="w-full flex flex-col gap-[8px]">
+                                <h4 className="w-full text-[#010514] text-[28px] font-bold leading-[36.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
+                                  {assessment.title}
+                                </h4>
+                                <div className="w-full flex justify-center items-center gap-[10px]">
+                                  <div className="flex-1 text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
+                                    {assessment.questions?.length || 0} câu hỏi
+                                  </div>
+                                  <div className="flex-1 text-right text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
+                                    {assessment.time_limit_minutes || 30} phút
+                                  </div>
+                                </div>
+                              </div>
                               <div className="w-full flex justify-center items-center gap-[10px]">
-                                <div className="flex-1 text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                  {test.instructor}
-                                </div>
-                                <div className="flex-1 text-right text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                  {test.date}
+                                <div className="flex-1 text-[#5B5B5B] text-[20px] font-bold leading-[32px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '700'}}>
+                                  {assessment.max_attempts || 1} lần làm
                                 </div>
                               </div>
+                              <button className="w-[80px] pt-[8px] pb-[8px] border-b border-[#5B5B5B] flex justify-center items-center hover:border-blue-600">
+                                <span className="text-[#5B5B5B] text-[22px] hover:text-blue-600" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
+                                  Làm bài
+                                </span>
+                              </button>
                             </div>
-                            <div className="w-full flex justify-center items-center gap-[10px]">
-                              <div className="flex-1 text-[#5B5B5B] text-[20px] font-bold leading-[32px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '700'}}>
-                                {test.attempt}
-                              </div>
-                            </div>
-                            <button className="w-[80px] pt-[8px] pb-[8px] border-b border-[#5B5B5B] flex justify-center items-center">
-                              <span className="text-[#5B5B5B] text-[22px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                Làm bài
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                     
                     {/* Pagination */}
                     <div className="w-[270px] flex justify-between items-center">
@@ -203,131 +216,7 @@ export default function ExerciseDetailPage() {
                     </div>
                   </div>
 
-                  {/* Week 2 */}
-                  <div className="flex flex-col items-center gap-[48px]">
-                    <h3 className="w-full text-[28px] font-bold text-black leading-[36.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
-                      Tuần 2
-                    </h3>
-                    <div className="w-full flex justify-between items-center">
-                      {testCards.map((test) => (
-                        <div key={test.id + 3} className="w-[415px] flex flex-col">
-                          {/* Icon */}
-                          <div className="pl-[30px] flex justify-start items-start gap-[10px]">
-                            <div className="p-5 bg-[#29B9E7] rounded-[12px] flex justify-start items-start gap-[10px]">
-                              <div className="w-[34px] h-[34px] relative overflow-hidden">
-                                <div className="w-[34px] h-[34px] left-0 top-0 absolute overflow-hidden">
-                                  <div className="w-[28.68px] h-[28.66px] left-[2.12px] top-[2.12px] absolute bg-white"></div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Card */}
-                          <div className="w-full pt-[80px] pb-[32px] px-[50px] bg-white shadow-[4px_4px_15px_#9DA1A6] rounded-[12px] flex flex-col items-end gap-[20px]">
-                            <div className="w-full flex flex-col gap-[8px]">
-                              <h4 className="w-full text-[#010514] text-[28px] font-bold leading-[36.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
-                                {test.title}
-                              </h4>
-                              <div className="w-full flex justify-center items-center gap-[10px]">
-                                <div className="flex-1 text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                  {test.instructor}
-                                </div>
-                                <div className="flex-1 text-right text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                  {test.date}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="w-full flex justify-center items-center gap-[10px]">
-                              <div className="flex-1 text-[#5B5B5B] text-[20px] font-bold leading-[32px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '700'}}>
-                                {test.attempt}
-                              </div>
-                            </div>
-                            <button className="w-[80px] pt-[8px] pb-[8px] border-b border-[#5B5B5B] flex justify-center items-center">
-                              <span className="text-[#5B5B5B] text-[22px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                Làm bài
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Pagination */}
-                    <div className="w-[270px] flex justify-between items-center">
-                      <button className="w-[50px] h-[50px] px-[19px] py-[11px] rounded-[32px] flex flex-col justify-center items-center gap-[10px]">
-                        <ChevronLeft className="w-6 h-6 text-[#AEACAC]" />
-                      </button>
-                      <span className="text-[#010514] text-[24px] font-bold leading-[38.40px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '700'}}>1</span>
-                      <span className="text-[#010514] text-[24px] leading-[38.40px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>2</span>
-                      <span className="text-[#010514] text-[24px] leading-[38.40px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>3</span>
-                      <button className="w-[50px] h-[50px] px-[19px] py-[11px] rounded-[37px] flex flex-col justify-center items-center gap-[10px]">
-                        <ChevronRight className="w-6 h-6 text-[#010514]" />
-                      </button>
-                    </div>
-                  </div>
 
-                  {/* Week 3 */}
-                  <div className="flex flex-col items-center gap-[48px]">
-                    <h3 className="w-full text-[28px] font-bold text-black leading-[36.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
-                      Tuần 3
-                    </h3>
-                    <div className="w-full flex justify-between items-center">
-                      {testCards.map((test) => (
-                        <div key={test.id + 6} className="w-[415px] flex flex-col">
-                          {/* Icon */}
-                          <div className="pl-[30px] flex justify-start items-start gap-[10px]">
-                            <div className="p-5 bg-[#29B9E7] rounded-[12px] flex justify-start items-start gap-[10px]">
-                              <div className="w-[34px] h-[34px] relative overflow-hidden">
-                                <div className="w-[34px] h-[34px] left-0 top-0 absolute overflow-hidden">
-                                  <div className="w-[28.68px] h-[28.66px] left-[2.12px] top-[2.12px] absolute bg-white"></div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Card */}
-                          <div className="w-full pt-[80px] pb-[32px] px-[50px] bg-white shadow-[4px_4px_15px_#9DA1A6] rounded-[12px] flex flex-col items-end gap-[20px]">
-                            <div className="w-full flex flex-col gap-[8px]">
-                              <h4 className="w-full text-[#010514] text-[28px] font-bold leading-[36.40px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
-                                {test.title}
-                              </h4>
-                              <div className="w-full flex justify-center items-center gap-[10px]">
-                                <div className="flex-1 text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                  {test.instructor}
-                                </div>
-                                <div className="flex-1 text-right text-[#5B5B5B] text-[14px] leading-[16.80px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                  {test.date}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="w-full flex justify-center items-center gap-[10px]">
-                              <div className="flex-1 text-[#5B5B5B] text-[20px] font-bold leading-[32px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '700'}}>
-                                {test.attempt}
-                              </div>
-                            </div>
-                            <button className="w-[80px] pt-[8px] pb-[8px] border-b border-[#5B5B5B] flex justify-center items-center">
-                              <span className="text-[#5B5B5B] text-[22px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>
-                                Làm bài
-                              </span>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {/* Pagination */}
-                    <div className="w-[270px] flex justify-between items-center">
-                      <button className="w-[50px] h-[50px] px-[19px] py-[11px] rounded-[32px] flex flex-col justify-center items-center gap-[10px]">
-                        <ChevronLeft className="w-6 h-6 text-[#AEACAC]" />
-                      </button>
-                      <span className="text-[#010514] text-[24px] font-bold leading-[38.40px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '700'}}>1</span>
-                      <span className="text-[#010514] text-[24px] leading-[38.40px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>2</span>
-                      <span className="text-[#010514] text-[24px] leading-[38.40px]" style={{fontFamily: 'SVN-Gilroy', fontWeight: '400'}}>3</span>
-                      <button className="w-[50px] h-[50px] px-[19px] py-[11px] rounded-[37px] flex flex-col justify-center items-center gap-[10px]">
-                        <ChevronRight className="w-6 h-6 text-[#010514]" />
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

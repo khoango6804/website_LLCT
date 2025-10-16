@@ -10,7 +10,12 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.core.mongodb import connect_to_mongo, close_mongo_connection, init_mongodb_models
 from app.api.api_v1.endpoints import mongodb_auth
+from app.api.api_v1.endpoints import mongo_assessments
+from app.api.api_v1.endpoints import assessment_results
+from app.api.api_v1.endpoints import news
+from app.api.api_v1.endpoints import products
 from app.core.config import settings
+from dotenv import load_dotenv
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -21,10 +26,24 @@ async def lifespan(app: FastAPI):
     """Application lifespan events"""
     # Startup
     logger.info("Starting up MongoDB FastAPI application...")
+    # Ensure .env is loaded when starting via `uvicorn app.main_mongodb:app`
+    try:
+        load_dotenv()
+    except Exception:
+        pass
     try:
         await connect_to_mongo()
         await init_mongodb_models()
         logger.info("MongoDB application started successfully!")
+        # Debug: log routes so we know what is mounted
+        try:
+            for r in app.routes:
+                try:
+                    logger.info(f"Route mounted: {getattr(r, 'path', None)} methods={getattr(r, 'methods', None)}")
+                except Exception:
+                    pass
+        except Exception:
+            pass
     except Exception as e:
         logger.error(f"Failed to start MongoDB application: {e}")
         raise
@@ -45,14 +64,13 @@ app = FastAPI(
 )
 
 # Add CORS middleware
-if settings.BACKEND_CORS_ORIGINS:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for development
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Add trusted host middleware
 app.add_middleware(
@@ -65,6 +83,26 @@ app.include_router(
     mongodb_auth.router,
     prefix="/api/v1/auth",
     tags=["MongoDB Authentication"]
+)
+app.include_router(
+    mongo_assessments.router,
+    prefix="/api/v1/mongo/assessments",
+    tags=["mongo-assessments"]
+)
+app.include_router(
+    assessment_results.router,
+    prefix="/api/v1/results",
+    tags=["assessment-results"]
+)
+app.include_router(
+    news.router,
+    prefix="/api/v1/news",
+    tags=["news"]
+)
+app.include_router(
+    products.router,
+    prefix="/api/v1/products",
+    tags=["products"]
 )
 
 @app.get("/")
@@ -104,6 +142,58 @@ async def health_check():
             "database": f"MongoDB error: {str(e)}",
             "timestamp": "2024-01-01T00:00:00Z"
         }
+
+@app.post("/create-admin")
+async def create_admin_user():
+    """Create default admin user for testing"""
+    try:
+        from app.models.mongodb_models import User, UserRole
+        from app.core.security import get_password_hash
+        
+        admin_email = "admin@demo.com"
+        
+        # Always delete existing admin to recreate with correct password
+        existing_admin = await User.find_one(User.email == admin_email)
+        if existing_admin:
+            await existing_admin.delete()
+            logger.info("Deleted existing admin user")
+        
+        # Create admin user with simple password
+        simple_password = "123"
+        admin_user = User(
+            email=admin_email,
+            username="admin",
+            full_name="Admin User",
+            hashed_password=get_password_hash(simple_password),
+            is_active=True,
+            is_superuser=True,
+            is_instructor=False,
+            role=UserRole.ADMIN
+        )
+        await admin_user.insert()
+        logger.info(f"Created new admin user with password: {simple_password}")
+        
+        return {
+            "message": "Admin user recreated successfully",
+            "email": admin_email,
+            "username": "admin",
+            "password": simple_password
+        }
+        
+    except Exception as e:
+        logger.error(f"Error creating admin user: {e}")
+        return {"error": str(e)}
+
+@app.get("/debug/routes")
+async def list_routes():
+    """Return all registered route paths (debug)."""
+    try:
+        return [
+            {"path": getattr(r, "path", None), "name": getattr(r, "name", None), "methods": list(getattr(r, "methods", []) or [])}
+            for r in app.routes
+        ]
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/api/v1/test")
 async def test_endpoint():

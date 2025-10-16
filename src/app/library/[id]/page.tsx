@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useState, use } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Search, 
   ArrowLeft, 
@@ -15,10 +15,10 @@ import {
 } from 'lucide-react';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
-export default function SubjectDetailPage() {
-  const params = useParams();
+export default function SubjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const router = useRouter();
-  const subjectId = params.id as string;
+  const subjectId = resolvedParams.id as string;
   const [searchQuery, setSearchQuery] = useState('');
 
   // Mock data for lectures

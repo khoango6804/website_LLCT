@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict
 import uvicorn
 import google.generativeai as genai
 
@@ -61,6 +61,38 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     response: str
+
+# --- Simple Assessments/Questions models (in-memory storage for demo) ---
+class AssessmentBase(BaseModel):
+    title: str
+    description: Optional[str] = None
+    assessment_type: str = "quiz"
+    subject_id: int = 0
+
+
+class AssessmentCreate(AssessmentBase):
+    created_by: int = 0
+
+
+class Assessment(AssessmentBase):
+    id: int
+    created_by: int
+    is_published: bool = False
+
+
+class QuestionCreate(BaseModel):
+    question_text: str
+    question_type: str = "multiple_choice"
+    options: Optional[List[str]] = None
+    correct_answer: str
+    explanation: Optional[str] = None
+    points: float = 1.0
+
+
+class Question(QuestionCreate):
+    id: int
+    assessment_id: int
+    created_by: int = 0
 
 # Mock users for testing
 MOCK_USERS = {
@@ -151,6 +183,55 @@ def test_endpoint():
             "Ready for development"
         ]
     }
+
+# ---------------- Assessments & Questions (mock, in-memory) ---------------- #
+_assessments: Dict[int, Assessment] = {}
+_questions_by_assessment: Dict[int, Dict[int, Question]] = {}
+_assessment_id_seq = 1
+_question_id_seq = 1
+
+
+@app.get("/api/v1/assessments", response_model=List[Assessment])
+def list_assessments():
+    return list(_assessments.values())
+
+
+@app.post("/api/v1/assessments", response_model=Assessment)
+def create_assessment(payload: AssessmentCreate):
+    global _assessment_id_seq
+    new_id = _assessment_id_seq
+    _assessment_id_seq += 1
+    assessment = Assessment(id=new_id, **payload.model_dump(), is_published=False)
+    _assessments[new_id] = assessment
+    _questions_by_assessment[new_id] = {}
+    return assessment
+
+
+@app.get("/api/v1/assessments/{assessment_id}", response_model=Assessment)
+def get_assessment(assessment_id: int):
+    assessment = _assessments.get(assessment_id)
+    if not assessment:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    return assessment
+
+
+@app.get("/api/v1/assessments/{assessment_id}/questions", response_model=List[Question])
+def list_questions(assessment_id: int):
+    if assessment_id not in _assessments:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    return list(_questions_by_assessment.get(assessment_id, {}).values())
+
+
+@app.post("/api/v1/assessments/{assessment_id}/questions", response_model=Question)
+def add_question(assessment_id: int, payload: QuestionCreate):
+    global _question_id_seq
+    if assessment_id not in _assessments:
+        raise HTTPException(status_code=404, detail="Assessment not found")
+    new_qid = _question_id_seq
+    _question_id_seq += 1
+    q = Question(id=new_qid, assessment_id=assessment_id, created_by=0, **payload.model_dump())
+    _questions_by_assessment[assessment_id][new_qid] = q
+    return q
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)

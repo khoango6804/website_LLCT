@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, use } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Edit, User, Calendar, Mail, Phone } from 'lucide-react';
 
-export default function NewsDetailPage({ params }: { params: { id: string } }) {
+export default function NewsDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params);
   const [article] = useState({
-    id: params.id,
+    id: resolvedParams.id,
     title: "Phiên bản mới nhất của SEB đã cập nhập",
     author: "Nguyễn Văn Bình",
     date: "20/00/20xx",

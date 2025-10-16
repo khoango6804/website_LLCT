@@ -265,21 +265,66 @@ export default function AIDataPage() {
     }
   };
 
+  const sidebarItems = [
+    { id: 'dashboard', title: 'Bảng tổng kết', icon: BarChart3, color: '#125093', href: '/admin/dashboard' },
+    { id: 'ai-data', title: 'Dữ liệu AI', icon: Database, color: '#00CBB8', href: '/admin/ai-data', active: true },
+    { id: 'library', title: 'Thư viện môn học', icon: BookOpen, color: '#5B72EE', href: '/admin/library' },
+    { id: 'products', title: 'Sản phẩm học tập', icon: FileText, color: '#F48C06', href: '/admin/products' },
+    { id: 'tests', title: 'Bài kiểm tra', icon: FileText, color: '#29B9E7', href: '/admin/tests' },
+    { id: 'news', title: 'Tin tức', icon: MessageCircle, color: '#00CBB8', href: '/admin/news' }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-between flex-wrap gap-4">
+    <div className="min-h-screen bg-white flex">
+      {/* Sidebar */}
+      <div className="w-56 bg-white p-4 border-r border-gray-100">
+        {/* Logo */}
+        <div className="mb-6">
+          <img 
+            src="https://placehold.co/192x192" 
+            alt="Logo" 
+            className="w-24 h-24 md:w-32 md:h-32 mb-6"
+          />
+        </div>
+
+        {/* Sidebar Menu */}
+        <div className="space-y-8">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.active;
+            return (
+              <a
+                key={item.id}
+                href={item.href}
+                className="flex items-center gap-4 hover:opacity-90"
+              >
+                <div
+                  className="w-8 h-8 flex items-center justify-center rounded"
+                  style={{ backgroundColor: item.color }}
+                >
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                <div className={`flex-1 text-sm md:text-base ${isActive ? 'font-bold text-gray-900' : 'font-medium text-gray-800'}`}>
+                  {item.title}
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b p-6">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản lý dữ liệu AI</h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Quản lý và xử lý dữ liệu cho hệ thống AI
-              </p>
+              <h1 className="text-2xl font-bold text-gray-900">Dữ liệu AI</h1>
+              <p className="text-gray-600 mt-1">Quản lý và xử lý dữ liệu cho hệ thống AI</p>
             </div>
             
             <div className="flex items-center space-x-4">
-              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
                 <RefreshCw className="h-4 w-4" />
                 <span>Làm mới</span>
               </button>
@@ -294,9 +339,8 @@ export default function AIDataPage() {
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="p-6">
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat, index) => {
@@ -629,6 +673,7 @@ export default function AIDataPage() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

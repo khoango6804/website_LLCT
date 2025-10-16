@@ -90,7 +90,7 @@ export default function ExercisesPage() {
             <div className="text-center mb-12">
               <h2 className="text-[32px] font-bold text-[#010514] mb-4 leading-[48px]" style={{fontFamily: 'SVN-Poppins', fontWeight: '700'}}>
                 Chọn môn học và<br/>
-                kiểm tra xem bạn có "pass" hay không nhé ^ 0 ^
+                kiểm tra xem bạn có "pass" hay không nhé!
               </h2>
             </div>
             

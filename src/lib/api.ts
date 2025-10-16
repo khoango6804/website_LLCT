@@ -3,7 +3,7 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
 // Mock API responses for development
-export const MOCK_MODE = true;
+export const MOCK_MODE = false;
 
 export const API_ENDPOINTS = {
   // Auth
@@ -37,6 +37,39 @@ export const API_ENDPOINTS = {
   CHAT_SESSIONS: '/api/v1/chat/sessions',
   CHAT_MESSAGES: (sessionId: string) => `/api/v1/chat/sessions/${sessionId}/messages`,
   
+  // Assessments (simple, mock in app_simple)
+  ASSESSMENTS: '/api/v1/assessments',
+  ASSESSMENT_DETAIL: (id: number) => `/api/v1/assessments/${id}`,
+  ASSESSMENT_QUESTIONS: (id: number) => `/api/v1/assessments/${id}/questions`,
+
+  // Mongo Assessments (Beanie)
+  MONGO_ASSESSMENTS: '/api/v1/mongo/assessments/',
+  MONGO_ASSESSMENT_DETAIL: (id: string) => `/api/v1/mongo/assessments/${id}`,
+  MONGO_ASSESSMENT_QUESTIONS: (id: string) => `/api/v1/mongo/assessments/${id}/questions`,
+  MONGO_ASSESSMENT_UPDATE: (id: string) => `/api/v1/mongo/assessments/${id}`,
+  MONGO_ASSESSMENT_DELETE: (id: string) => `/api/v1/mongo/assessments/${id}`,
+  MONGO_QUESTION_UPDATE: (id: string, index: number) => `/api/v1/mongo/assessments/${id}/questions/${index}`,
+  MONGO_QUESTION_DELETE: (id: string, index: number) => `/api/v1/mongo/assessments/${id}/questions/${index}`,
+
+  // Assessment Results
+  ASSESSMENT_RESULTS: '/api/v1/results/',
+  STUDENT_RESULTS: (studentId: string) => `/api/v1/results/student/${studentId}`,
+  ASSESSMENT_RESULTS_BY_ID: (assessmentId: string) => `/api/v1/results/assessment/${assessmentId}`,
+  ASSESSMENT_STATISTICS: (assessmentId: string) => `/api/v1/results/statistics/${assessmentId}`,
+  
+  // News
+  NEWS: '/api/v1/news/',
+  NEWS_BY_ID: (newsId: string) => `/api/v1/news/${newsId}`,
+  NEWS_FEATURED: '/api/v1/news/public/featured',
+  NEWS_LATEST: '/api/v1/news/public/latest',
+
+  // Products
+  PRODUCTS: '/api/v1/products/',
+  PRODUCT_BY_ID: (id: string) => `/api/v1/products/${id}`,
+  PRODUCT_STATS: '/api/v1/products/stats/summary',
+  PRODUCT_VIEW: (id: string) => `/api/v1/products/${id}/view`,
+  PRODUCT_DOWNLOAD: (id: string) => `/api/v1/products/${id}/download`,
+
   // Upload
   UPLOAD: '/api/v1/upload',
   
@@ -56,5 +89,24 @@ export function handleApiError(error: any): string {
     return error.message;
   }
   return 'Đã xảy ra lỗi. Vui lòng thử lại.';
+}
+
+// Auth fetch function with token
+export async function authFetch(url: string, options: RequestInit = {}): Promise<Response> {
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string> || {}),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return fetch(url, {
+    ...options,
+    headers,
+  });
 }
 

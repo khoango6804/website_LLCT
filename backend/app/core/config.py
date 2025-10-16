@@ -9,8 +9,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "E-Learning Platform"
     ENVIRONMENT: str = "development"
     
-    # Database - Supabase PostgreSQL
-    DATABASE_URL: str = "postgresql://postgres:password@localhost:5432/elearning"
+    # Database (use SQLite by default; set env DATABASE_URL for Postgres)
+    DATABASE_URL: str = "sqlite:///./elearning.db"
     DATABASE_POOL_SIZE: int = 10
     DATABASE_MAX_OVERFLOW: int = 20
     
@@ -83,6 +83,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"
 
 
 settings = Settings()

@@ -346,7 +346,7 @@ export default function ChatbotPage() {
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Tôi có thể hỗ trợ gì cho bạn ^v^"
+                      placeholder="Tôi có thể hỗ trợ gì cho bạn"
                       className="flex-1 px-6 py-4 bg-white rounded-2xl focus:ring-2 focus:ring-blue-500 focus:outline-none text-[24px] leading-[38.40px] text-[#010514]"
                       style={{fontFamily: 'SVN-Gilroy'}}
                     />
