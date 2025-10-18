@@ -2,7 +2,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 
-from ....models.mongodb_models import Exercise
+from app.models.mongodb_models import Exercise
+from app.api.api_v1.endpoints.mongodb_auth import get_current_user
 
 router = APIRouter()
 
@@ -41,7 +42,7 @@ async def list_assessments(skip: int = 0, limit: int = 50, subject_code: Optiona
 
 
 @router.post("/", response_model=Exercise)
-async def create_assessment(payload: AssessmentCreate):
+async def create_assessment(payload: AssessmentCreate, current_user = Depends(get_current_user)):
     exercise = Exercise(
         title=payload.title,
         description=payload.description or "",
@@ -63,8 +64,8 @@ async def list_assessments_no_slash(skip: int = 0, limit: int = 50, subject_code
     return await list_assessments(skip, limit, subject_code, published_only)
 
 @router.post("", response_model=Exercise)
-async def create_assessment_no_slash(payload: AssessmentCreate):
-    return await create_assessment(payload)
+async def create_assessment_no_slash(payload: AssessmentCreate, current_user = Depends(get_current_user)):
+    return await create_assessment(payload, current_user)
 
 
 @router.get("/{exercise_id}", response_model=Exercise)

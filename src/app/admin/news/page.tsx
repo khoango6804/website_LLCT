@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { 
   Plus, 
   Edit, 
@@ -19,7 +20,11 @@ import {
   FileText,
   Star,
   Upload,
-  BarChart3
+  BarChart3,
+  Brain,
+  BookOpen,
+  MessageSquare,
+  Users
 } from 'lucide-react';
 import { API_ENDPOINTS, getFullUrl, authFetch } from '@/lib/api';
 
@@ -261,62 +266,80 @@ export default function AdminNewsPage() {
     );
   }
 
+  const sidebarItems = [
+    { id: 'dashboard', title: 'Bảng tổng kết', icon: BarChart3, color: '#125093', href: '/admin/dashboard' },
+    { id: 'ai-data', title: 'Dữ liệu AI', icon: Brain, color: '#00CBB8', href: '/admin/ai-data' },
+    { id: 'library', title: 'Thư viện môn học', icon: BookOpen, color: '#5B72EE', href: '/admin/library' },
+    { id: 'products', title: 'Sản phẩm học tập', icon: FileText, color: '#F48C06', href: '/admin/products' },
+    { id: 'tests', title: 'Bài kiểm tra', icon: FileText, color: '#29B9E7', href: '/admin/tests' },
+    { id: 'news', title: 'Tin tức', icon: MessageSquare, color: '#00CBB8', href: '/admin/news', active: true },
+    { id: 'members', title: 'Thành viên', icon: Users, color: '#8B5CF6', href: '/admin/members' }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">Quản lý tin tức</h1>
-              <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
-                {articles.length} bài viết
-              </span>
-            </div>
-            <button
-              onClick={() => handleOpenEditor()}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              <span>Tạo bài viết mới</span>
-            </button>
-          </div>
+    <ProtectedRoute requiredRoles={['admin', 'instructor']}>
+      <div className="min-h-screen bg-white flex">
+      {/* Sidebar */}
+      <div className="w-56 bg-white p-4 border-r border-gray-100">
+        {/* Logo */}
+        <div className="mb-6">
+          <img 
+            src="https://placehold.co/192x192" 
+            alt="Logo" 
+            className="w-24 h-24 md:w-32 md:h-32 mb-6"
+          />
+        </div>
+
+        {/* Sidebar Menu */}
+        <div className="space-y-8">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.active;
+            return (
+              <a
+                key={item.id}
+                href={item.href}
+                className="flex items-center gap-4 hover:opacity-90"
+              >
+                <div
+                  className="w-8 h-8 flex items-center justify-center rounded"
+                  style={{ backgroundColor: item.color }}
+                >
+                  <Icon className="w-5 h-5 text-white" />
+                </div>
+                <div className={`flex-1 text-sm md:text-base ${isActive ? 'font-bold text-gray-900' : 'font-medium text-gray-800'}`}>
+                  {item.title}
+                </div>
+              </a>
+            );
+          })}
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Sidebar */}
-        <div className="flex gap-8">
-          <div className="w-64 bg-white rounded-lg shadow-sm p-6">
-            <nav className="space-y-2">
-              <Link href="/admin/dashboard" className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors">
-                <BarChart3 className="h-5 w-5" />
-                <span>Bảng tổng kết</span>
-              </Link>
-              <Link href="/admin/ai-data" className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors">
-                <FileText className="h-5 w-5" />
-                <span>Dữ liệu AI</span>
-              </Link>
-              <Link href="/admin/library" className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors">
-                <FileText className="h-5 w-5" />
-                <span>Thư viện môn học</span>
-              </Link>
-              <Link href="/admin/products" className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors">
-                <FileText className="h-5 w-5" />
-                <span>Sản phẩm học tập</span>
-              </Link>
-              <Link href="/admin/tests" className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-md transition-colors">
-                <FileText className="h-5 w-5" />
-                <span>Bài kiểm tra</span>
-              </Link>
-              <Link href="/admin/news" className="flex items-center space-x-3 text-blue-600 bg-blue-50 px-3 py-2 rounded-md">
-                <FileText className="h-5 w-5" />
-                <span>Tin tức</span>
-              </Link>
-            </nav>
+      {/* Main Content */}
+      <div className="flex-1 bg-gray-50">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div className="flex items-center space-x-4">
+                <h1 className="text-2xl font-bold text-gray-900">Quản lý tin tức</h1>
+                <span className="bg-blue-100 text-blue-800 text-sm font-medium px-2.5 py-0.5 rounded">
+                  {articles.length} bài viết
+                </span>
+              </div>
+              <button
+                onClick={() => handleOpenEditor()}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Tạo bài viết mới</span>
+              </button>
+            </div>
           </div>
+        </div>
 
-          {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex-1">
             {!showEditor ? (
               /* Articles List */
@@ -613,5 +636,6 @@ export default function AdminNewsPage() {
         </div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

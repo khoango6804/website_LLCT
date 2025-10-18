@@ -160,19 +160,6 @@ export default function Home() {
                 </div>
               )}
               
-                       {/* Clear localStorage button for debugging */}
-                       <button 
-                         onClick={() => {
-                           if (typeof window !== 'undefined') {
-                             localStorage.clear();
-                             window.location.reload();
-                           }
-                         }}
-                         className="mb-4 px-4 py-2 bg-red-500 text-white rounded text-sm"
-                       >
-                         Clear localStorage & Reload
-                       </button>
-              
               <h1 className="text-[54px] font-bold leading-[81px] mb-6" style={{fontFamily: 'SVN-Poppins'}}>
                 Thư viện online bộ môn <span className="text-[#00CBB8]">Soft Skills</span>
               </h1>

@@ -43,7 +43,7 @@ export const API_ENDPOINTS = {
   ASSESSMENT_QUESTIONS: (id: number) => `/api/v1/assessments/${id}/questions`,
 
   // Mongo Assessments (Beanie)
-  MONGO_ASSESSMENTS: '/api/v1/mongo/assessments/',
+  MONGO_ASSESSMENTS: '/api/v1/mongo/assessments',
   MONGO_ASSESSMENT_DETAIL: (id: string) => `/api/v1/mongo/assessments/${id}`,
   MONGO_ASSESSMENT_QUESTIONS: (id: string) => `/api/v1/mongo/assessments/${id}/questions`,
   MONGO_ASSESSMENT_UPDATE: (id: string) => `/api/v1/mongo/assessments/${id}`,
@@ -56,6 +56,14 @@ export const API_ENDPOINTS = {
   STUDENT_RESULTS: (studentId: string) => `/api/v1/results/student/${studentId}`,
   ASSESSMENT_RESULTS_BY_ID: (assessmentId: string) => `/api/v1/results/assessment/${assessmentId}`,
   ASSESSMENT_STATISTICS: (assessmentId: string) => `/api/v1/results/statistics/${assessmentId}`,
+
+  // Library & Documents
+  LIBRARY_DOCUMENTS: '/api/v1/library/documents/',
+  LIBRARY_DOCUMENT_UPLOAD: '/api/v1/library/documents/upload',
+  LIBRARY_DOCUMENT_DETAIL: (id: string) => `/api/v1/library/documents/${id}`,
+  LIBRARY_DOCUMENT_DOWNLOAD: (id: string) => `/api/v1/library/documents/${id}/download`,
+  LIBRARY_SUBJECTS: '/api/v1/library/subjects/',
+  LIBRARY_SUBJECT_DETAIL: (id: string) => `/api/v1/library/subjects/${id}`,
   
   // News
   NEWS: '/api/v1/news/',
@@ -75,6 +83,13 @@ export const API_ENDPOINTS = {
   
   // Analytics
   ANALYTICS: '/api/v1/analytics',
+
+  // Test Results (app_simple mock or real API)
+  TEST_RESULTS_START: '/api/v1/test-results/start',
+  TEST_RESULTS_SUBMIT: (resultId: string) => `/api/v1/test-results/${resultId}/submit`,
+  TEST_RESULTS_MY: '/api/v1/test-results/my-results',
+  TEST_RESULTS_PROGRESS: '/api/v1/test-results/my-progress',
+  TEST_RESULTS_INSTRUCTOR_STATS: '/api/v1/test-results/instructor-stats',
 };
 
 export function getFullUrl(endpoint: string): string {

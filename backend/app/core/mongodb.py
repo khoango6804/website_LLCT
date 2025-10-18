@@ -58,7 +58,7 @@ async def close_mongo_connection():
 async def init_mongodb_models():
     """Initialize Beanie with all document models"""
     try:
-        from app.models.mongodb_models import User, Course, Lesson, Exercise, ChatSession, News, Assessment
+        from app.models.mongodb_models import User, Course, Lesson, Exercise, ChatSession, News, Assessment, AssessmentResult, LibraryDocument, Subject
         
         # Initialize Beanie
         await init_beanie(
@@ -70,7 +70,10 @@ async def init_mongodb_models():
                 Exercise,
                 ChatSession,
                 News,
-                Assessment
+                Assessment,
+                AssessmentResult,
+                LibraryDocument,
+                Subject,
             ]
         )
         logger.info("MongoDB models initialized successfully!")

@@ -12,7 +12,8 @@ import {
   Edit,
   ChevronLeft,
   ChevronRight,
-  Trash2
+  Trash2,
+  Users
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -25,7 +26,8 @@ export default function AdminDashboardPage() {
     { id: 'library', title: 'Thư viện môn học', icon: BookOpen, color: '#5B72EE', href: '/admin/library' },
     { id: 'products', title: 'Sản phẩm học tập', icon: FileText, color: '#F48C06', href: '/admin/products' },
     { id: 'tests', title: 'Bài kiểm tra', icon: FileText, color: '#29B9E7', href: '/admin/tests' },
-    { id: 'news', title: 'Tin tức', icon: MessageSquare, color: '#00CBB8', href: '/admin/news' }
+    { id: 'news', title: 'Tin tức', icon: MessageSquare, color: '#00CBB8', href: '/admin/news' },
+    { id: 'members', title: 'Thành viên', icon: Users, color: '#8B5CF6', href: '/admin/members' }
   ];
 
   const courses = [
@@ -68,7 +70,7 @@ export default function AdminDashboardPage() {
   ];
 
   return (
-    <ProtectedRoute requiredRole="admin">
+    <ProtectedRoute requiredRoles={['admin', 'instructor']}>
       <div className="min-h-screen bg-white flex">
         {/* Sidebar */}
         <div className="w-56 bg-white p-4 border-r border-gray-100">

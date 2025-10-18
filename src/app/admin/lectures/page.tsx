@@ -75,7 +75,7 @@ export default function AdminLecturesPage() {
   ];
 
   return (
-    <ProtectedRoute requiredRole="admin">
+    <ProtectedRoute requiredRoles={['admin', 'instructor']}>
       <div className="min-h-screen bg-gray-50 flex">
         {/* Sidebar */}
         <div className="w-56 bg-blue-600 text-white">

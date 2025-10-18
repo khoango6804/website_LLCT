@@ -10,7 +10,9 @@ import {
   ChevronDown, 
   Shield, 
   GraduationCap,
-  BookOpen
+  BookOpen,
+  BarChart3,
+  TrendingUp
 } from 'lucide-react';
 
 export default function UserMenu() {
@@ -116,6 +118,17 @@ export default function UserMenu() {
             <button
               onClick={() => {
                 setIsOpen(false);
+                router.push('/my-results');
+              }}
+              className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              <BarChart3 className="h-4 w-4 mr-3" />
+              Kết quả học tập
+            </button>
+
+            <button
+              onClick={() => {
+                setIsOpen(false);
                 router.push('/settings');
               }}
               className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
@@ -138,16 +151,28 @@ export default function UserMenu() {
             )}
 
             {hasRole('instructor') && (
-              <button
-                onClick={() => {
-                  setIsOpen(false);
-                  router.push('/instructor');
-                }}
-                className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-              >
-                <GraduationCap className="h-4 w-4 mr-3" />
-                Bảng điều khiển giảng viên
-              </button>
+              <>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push('/instructor');
+                  }}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <GraduationCap className="h-4 w-4 mr-3" />
+                  Bảng điều khiển giảng viên
+                </button>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    router.push('/instructor/stats');
+                  }}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                  <TrendingUp className="h-4 w-4 mr-3" />
+                  Thống kê giảng dạy
+                </button>
+              </>
             )}
           </div>
 

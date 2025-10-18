@@ -1,5 +1,6 @@
 """
 MongoDB Authentication endpoints
+Updated with user management endpoints
 """
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -179,8 +180,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         await user.save()
         
         # Create tokens
-        access_token = create_access_token(data={"sub": str(user.id)})
-        refresh_token = create_refresh_token(data={"sub": str(user.id)})
+        access_token = create_access_token(subject=str(user.id))
+        refresh_token = create_refresh_token(subject=str(user.id))
         
         logger.info(f"User logged in: {user.email}")
         
@@ -244,8 +245,8 @@ async def refresh_token(refresh_token: str):
             )
         
         # Create new tokens
-        new_access_token = create_access_token(data={"sub": str(user.id)})
-        new_refresh_token = create_refresh_token(data={"sub": str(user.id)})
+        new_access_token = create_access_token(subject=str(user.id))
+        new_refresh_token = create_refresh_token(subject=str(user.id))
         
         return TokenResponse(
             access_token=new_access_token,
@@ -302,3 +303,126 @@ async def get_users(
         )
         for user in users
     ]
+
+@router.patch("/users/{user_id}", response_model=UserResponse)
+async def update_user(
+    user_id: str,
+    user_data: dict,
+    current_user: User = Depends(get_current_user)
+):
+    """Update user (admin only)"""
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admin can update users"
+        )
+    
+    try:
+        user = await User.get(PydanticObjectId(user_id))
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Prevent changing admin role
+        if user.role == UserRole.ADMIN and "role" in user_data:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot change admin role"
+            )
+        
+        # Prevent deactivating admin
+        if user.role == UserRole.ADMIN and "is_active" in user_data and not user_data["is_active"]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot deactivate admin user"
+            )
+        
+        # Update allowed fields
+        if "role" in user_data:
+            role_mapping = {
+                "admin": UserRole.ADMIN,
+                "instructor": UserRole.INSTRUCTOR,
+                "student": UserRole.STUDENT
+            }
+            if user_data["role"] in role_mapping:
+                user.role = role_mapping[user_data["role"]]
+                user.is_instructor = user_data["role"] == "instructor"
+        
+        if "is_active" in user_data:
+            user.is_active = user_data["is_active"]
+        
+        if "full_name" in user_data:
+            user.full_name = user_data["full_name"]
+        
+        await user.save()
+        logger.info(f"User updated: {user.email} by {current_user.email}")
+        
+        return UserResponse(
+            id=str(user.id),
+            email=user.email,
+            username=user.username,
+            full_name=user.full_name,
+            role=user.role,
+            is_active=user.is_active,
+            avatar_url=user.avatar_url,
+            created_at=user.created_at
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating user: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to update user"
+        )
+
+@router.delete("/users/{user_id}")
+async def delete_user(
+    user_id: str,
+    current_user: User = Depends(get_current_user)
+):
+    """Delete user (admin only)"""
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admin can delete users"
+        )
+    
+    try:
+        user = await User.get(PydanticObjectId(user_id))
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
+        
+        # Don't allow deleting admin users
+        if user.role == UserRole.ADMIN:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Cannot delete admin user"
+            )
+        
+        # Don't allow deleting yourself
+        if str(user.id) == str(current_user.id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Cannot delete yourself"
+            )
+        
+        await user.delete()
+        logger.info(f"User deleted: {user.email} by {current_user.email}")
+        
+        return {"message": "User deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting user: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete user"
+        )

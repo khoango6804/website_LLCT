@@ -73,6 +73,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const authFetch = async (url: string, options?: RequestInit): Promise<Response> => {
     let currentToken = token || (typeof window !== 'undefined' ? localStorage.getItem('access_token') : null);
+    
+    // For development, use mock token if no real token available
+    if (!currentToken && process.env.NODE_ENV === 'development') {
+      currentToken = 'mock_token_123';
+    }
+    
     const headers = new Headers(options?.headers || {});
     if (currentToken) headers.set('Authorization', `Bearer ${currentToken}`);
 
@@ -89,23 +95,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Try MongoDB API first
+      // Try Backend API first
       try {
-        const formData = new FormData();
-        formData.append('username', email); // Backend expects username but uses it as email
-        formData.append('password', password);
-        
         const response = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
           method: 'POST',
-          body: formData,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          console.log('MongoDB login successful for:', email);
-          console.log('MongoDB response data:', data);
-          console.log('MongoDB user data:', data.user);
+          console.log('Backend login successful for:', email);
+          console.log('Backend response data:', data);
+          console.log('Backend user data:', data.user);
           setToken(data.access_token);
           setRefreshToken(data.refresh_token);
           setUser(data.user);
@@ -118,11 +123,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           return true;
         } else {
-          console.error('MongoDB login failed:', data.detail || data.message || 'Unknown error');
+          console.error('Backend login failed:', data.detail || data.message || 'Unknown error');
           // Fall back to mock login
         }
       } catch (apiError) {
-        console.log('MongoDB API not available, using mock login');
+        console.log('Backend API not available, using mock login');
       }
 
       // Mock login fallback

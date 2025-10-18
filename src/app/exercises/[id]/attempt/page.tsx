@@ -22,6 +22,7 @@ export default function TestAttemptPage({ params }: { params: Promise<{ id: stri
   const [assessment, setAssessment] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [resultId, setResultId] = useState<string | null>(null);
 
   const subjectInfo = {
     'mln111': { code: 'MLN111', name: 'Kỹ năng mềm cơ bản' },
@@ -55,6 +56,30 @@ export default function TestAttemptPage({ params }: { params: Promise<{ id: stri
         // Set timer from assessment data
         if (assessmentData.time_limit_minutes) {
           setTimeLeft(assessmentData.time_limit_minutes * 60);
+        }
+
+        // Start test attempt (backend result tracking)
+        try {
+          const startRes = await authFetch(getFullUrl(API_ENDPOINTS.TEST_RESULTS_START), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              test_id: assessmentId,
+              test_title: assessmentData.title,
+              subject_id: assessmentData.subject_id || resolvedParams.id,
+              subject_name: assessmentData.subject_name || currentSubject.name,
+              total_questions: (questionsData || []).length,
+              time_limit: assessmentData.time_limit_minutes,
+              max_attempts: assessmentData.max_attempts || 1,
+              passing_score: 60,
+            }),
+          });
+          if (startRes.ok) {
+            const startData = await startRes.json();
+            setResultId(startData.id);
+          }
+        } catch (e) {
+          console.warn('Could not start test tracking, will still allow attempt.');
         }
       } catch (error) {
         console.error('Error loading assessment:', error);
@@ -130,13 +155,15 @@ export default function TestAttemptPage({ params }: { params: Promise<{ id: stri
       
       // Save result to backend
       const resultData = {
-        student_id: user?.id || 'anonymous',
+        student_id: user?.id?.toString() || 'anonymous',
         student_name: user?.full_name || user?.email || 'Anonymous',
         assessment_id: assessmentId,
         assessment_title: assessment.title,
         subject_code: assessment.subject_code,
         subject_name: assessment.subject_name,
-        answers: answers,
+        answers: Object.fromEntries(
+          Object.entries(answers).map(([qid, answerIndex]) => [qid, String(answerIndex)])
+        ),
         score: score,
         correct_answers: correctAnswers,
         total_questions: totalQuestions,
@@ -144,22 +171,14 @@ export default function TestAttemptPage({ params }: { params: Promise<{ id: stri
         max_time: assessment.time_limit_minutes * 60
       };
 
-      // Save to database via API
+      // Save to MongoDB via API (Beanie assessment results)
       try {
-        const response = await authFetch(getFullUrl(API_ENDPOINTS.ASSESSMENT_RESULTS), {
+        const res = await authFetch(getFullUrl(API_ENDPOINTS.ASSESSMENT_RESULTS), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(resultData)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(resultData),
         });
-
-        if (!response.ok) {
-          throw new Error('Failed to save result to database');
-        }
-
-        const savedResult = await response.json();
-        console.log('Result saved successfully:', savedResult);
+        if (!res.ok) throw new Error('Failed to save result to Mongo');
       } catch (apiError) {
         console.error('Error saving to API, falling back to localStorage:', apiError);
         // Fallback to localStorage if API fails

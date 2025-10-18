@@ -6,13 +6,15 @@ import { useEffect, ReactNode } from 'react';
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  requiredRole?: 'admin' | 'instructor' | 'student';
+  requiredRole?: 'admin' | 'instructor' | 'student'; // legacy single-role
+  requiredRoles?: Array<'admin' | 'instructor' | 'student'>; // preferred multi-role
   fallbackPath?: string;
 }
 
 export default function ProtectedRoute({ 
   children, 
   requiredRole, 
+  requiredRoles,
   fallbackPath = '/login' 
 }: ProtectedRouteProps) {
   const { isAuthenticated, hasRole, isLoading } = useAuth();
@@ -25,7 +27,9 @@ export default function ProtectedRoute({
         return;
       }
 
-      if (requiredRole && !hasRole(requiredRole)) {
+      const rolesToCheck = requiredRoles && requiredRoles.length > 0 ? requiredRoles : (requiredRole ? [requiredRole] : []);
+
+      if (rolesToCheck.length > 0 && !rolesToCheck.some(r => hasRole(r))) {
         // Redirect based on user's actual role
         const userRole = hasRole('admin') ? 'admin' : 
                         hasRole('instructor') ? 'instructor' : 'student';
@@ -44,7 +48,7 @@ export default function ProtectedRoute({
         return;
       }
     }
-  }, [isAuthenticated, hasRole, requiredRole, isLoading, router, fallbackPath]);
+  }, [isAuthenticated, hasRole, requiredRole, requiredRoles, isLoading, router, fallbackPath]);
 
   // Show loading while checking authentication
   if (isLoading) {
@@ -56,7 +60,8 @@ export default function ProtectedRoute({
   }
 
   // Don't render children if not authenticated or doesn't have required role
-  if (!isAuthenticated || (requiredRole && !hasRole(requiredRole))) {
+  const rolesToCheck = requiredRoles && requiredRoles.length > 0 ? requiredRoles : (requiredRole ? [requiredRole] : []);
+  if (!isAuthenticated || (rolesToCheck.length > 0 && !rolesToCheck.some(r => hasRole(r)))) {
     return null;
   }
 

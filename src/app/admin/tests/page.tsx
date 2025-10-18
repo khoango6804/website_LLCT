@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { API_ENDPOINTS, getFullUrl } from '@/lib/api';
 import { useAuth } from '@/contexts/AuthContext';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import { 
   Users, 
   BookOpen, 
@@ -408,7 +409,8 @@ export default function AdminTestsPage() {
     { id: 'library', label: 'Thư viện môn học', icon: BookOpen, color: '#5B72EE', href: '/admin/library' },
     { id: 'products', label: 'Sản phẩm học tập', icon: FileText, color: '#F48C06', href: '/admin/products' },
     { id: 'tests', label: 'Bài kiểm tra', icon: FileText, color: '#29B9E7', href: '/admin/tests', active: true },
-    { id: 'news', label: 'Tin tức', icon: MessageSquare, color: '#00CBB8', href: '/admin/news' }
+    { id: 'news', label: 'Tin tức', icon: MessageSquare, color: '#00CBB8', href: '/admin/news' },
+    { id: 'members', label: 'Thành viên', icon: Users, color: '#8B5CF6', href: '/admin/members' }
   ];
 
   if (isLoading) {
@@ -424,6 +426,7 @@ export default function AdminTestsPage() {
   }
 
   return (
+    <ProtectedRoute requiredRoles={['admin', 'instructor']}>
       <div className="min-h-screen bg-white flex" suppressHydrationWarning>
         {/* Sidebar (match dashboard style) */}
         <div className="w-56 bg-white p-4 border-r border-gray-100">
@@ -964,5 +967,6 @@ export default function AdminTestsPage() {
           {/* Footer removed to avoid duplication with global footer */}
         </div>
       </div>
+    </ProtectedRoute>
   );
 }

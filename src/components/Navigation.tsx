@@ -6,7 +6,6 @@ import {
   BookOpen, 
   MessageCircle, 
   FileText, 
-  BarChart3, 
   Users, 
   MessageSquare, 
   Settings,

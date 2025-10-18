@@ -7,6 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.core.mongodb import connect_to_mongo, close_mongo_connection, init_mongodb_models
 from app.api.api_v1.endpoints import mongodb_auth
@@ -14,6 +15,7 @@ from app.api.api_v1.endpoints import mongo_assessments
 from app.api.api_v1.endpoints import assessment_results
 from app.api.api_v1.endpoints import news
 from app.api.api_v1.endpoints import products
+from app.api.api_v1.endpoints import library
 from app.core.config import settings
 from dotenv import load_dotenv
 
@@ -104,6 +106,18 @@ app.include_router(
     prefix="/api/v1/products",
     tags=["products"]
 )
+app.include_router(
+    library.router,
+    prefix="/api/v1/library",
+    tags=["library"]
+)
+
+# Mount static files for uploaded documents
+import os
+from pathlib import Path
+uploads_dir = Path("uploads")
+uploads_dir.mkdir(exist_ok=True)
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 @app.get("/")
 async def root():
