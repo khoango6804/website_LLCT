@@ -11,11 +11,11 @@ export default function TestResultPage({ params }: { params: Promise<{ id: strin
   const [resultData, setResultData] = useState<any>(null);
   
   const subjectInfo = {
-    'mln111': { code: 'MLN111', name: 'Kỹ năng mềm cơ bản' },
-    'mln122': { code: 'MLN122', name: 'Giao tiếp hiệu quả' },
-    'mln131': { code: 'MLN131', name: 'Tư duy phản biện' },
-    'hcm202': { code: 'HCM202', name: 'Lãnh đạo nhóm' },
-    'vnr202': { code: 'VNR202', name: 'Văn hóa doanh nghiệp' }
+    'mln111': { code: 'MLN111', name: 'Triết học Mác - Lê-nin' },
+    'mln122': { code: 'MLN122', name: 'Kinh tế chính trị Mác - Lê-nin' },
+    'mln131': { code: 'MLN131', name: 'Chủ nghĩa xã hội khoa học' },
+    'hcm202': { code: 'HCM202', name: 'Tư tưởng Hồ Chí Minh' },
+    'vnr202': { code: 'VNR202', name: 'Lịch sử Đảng Cộng sản Việt Nam' }
   };
 
   const currentSubject = subjectInfo[resolvedParams.id as keyof typeof subjectInfo] || subjectInfo.mln111;

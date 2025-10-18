@@ -62,11 +62,11 @@ export default function AdminTestsPage() {
   // Subject selection for publishing
   const [selectedSubject, setSelectedSubject] = useState<{code: string, name: string}>({code: '', name: ''});
   const subjects = [
-    { code: 'MLN111', name: 'Kỹ năng mềm cơ bản' },
-    { code: 'MLN122', name: 'Giao tiếp hiệu quả' },
-    { code: 'MLN131', name: 'Tư duy phản biện' },
-    { code: 'HCM202', name: 'Lãnh đạo nhóm' },
-    { code: 'VNR202', name: 'Văn hóa doanh nghiệp' }
+    { code: 'MLN111', name: 'Triết học Mác - Lê-nin' },
+    { code: 'MLN122', name: 'Kinh tế chính trị Mác - Lê-nin' },
+    { code: 'MLN131', name: 'Chủ nghĩa xã hội khoa học' },
+    { code: 'HCM202', name: 'Tư tưởng Hồ Chí Minh' },
+    { code: 'VNR202', name: 'Lịch sử Đảng Cộng sản Việt Nam' }
   ];
 
   // View mode state

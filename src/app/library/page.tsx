@@ -11,38 +11,38 @@ export default function LibraryPage() {
   const subjects = [
     {
       id: 'MLN111',
-      name: 'Mác Lê-nin',
+      name: 'Triết học Mác - Lê-nin',
       icon: GraduationCap,
       bgColor: 'bg-blue-900',
-      description: 'Triết học Mác-Lênin'
+      description: 'Triết học Mác - Lê-nin'
     },
     {
       id: 'MLN122',
-      name: 'Văn hóa',
+      name: 'Kinh tế chính trị Mác - Lê-nin',
       icon: Smile,
       bgColor: 'bg-blue-500',
-      description: 'Văn hóa Việt Nam'
+      description: 'Kinh tế chính trị Mác - Lê-nin'
     },
     {
       id: 'MLN131',
-      name: 'Mác Lê-nin 131',
+      name: 'Chủ nghĩa xã hội khoa học',
       icon: Puzzle,
       bgColor: 'bg-teal-500',
-      description: 'Kinh tế chính trị'
+      description: 'Chủ nghĩa xã hội khoa học'
     },
     {
       id: 'HCM202',
-      name: 'Hồ Chí Minh',
+      name: 'Tư tưởng Hồ Chí Minh',
       icon: Lightbulb,
       bgColor: 'bg-cyan-400',
       description: 'Tư tưởng Hồ Chí Minh'
     },
     {
       id: 'VNR202',
-      name: 'Việt Nam',
+      name: 'Lịch sử Đảng Cộng sản Việt Nam',
       icon: Building2,
       bgColor: 'bg-purple-600',
-      description: 'Lịch sử Việt Nam'
+      description: 'Lịch sử Đảng Cộng sản Việt Nam'
     }
   ];
 

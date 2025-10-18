@@ -10,7 +10,7 @@ export default function ExercisesPage() {
     {
       id: 'mln111',
       code: 'MLN111',
-      name: 'Kỹ năng mềm cơ bản',
+      name: 'Triết học Mác - Lê-nin',
       icon: BookOpen,
       color: '#125093',
       description: 'Các kỹ năng mềm cơ bản trong công việc'
@@ -18,7 +18,7 @@ export default function ExercisesPage() {
     {
       id: 'mln122',
       code: 'MLN122',
-      name: 'Giao tiếp hiệu quả',
+      name: 'Kinh tế chính trị Mác - Lê-nin',
       icon: Users,
       color: '#29B9E7',
       description: 'Kỹ năng giao tiếp và thuyết trình'
@@ -26,7 +26,7 @@ export default function ExercisesPage() {
     {
       id: 'mln131',
       code: 'MLN131',
-      name: 'Tư duy phản biện',
+      name: 'Chủ nghĩa xã hội khoa học',
       icon: FileText,
       color: '#49BBBD',
       description: 'Phát triển tư duy logic và phản biện'
@@ -34,7 +34,7 @@ export default function ExercisesPage() {
     {
       id: 'hcm202',
       code: 'HCM202',
-      name: 'Lãnh đạo nhóm',
+      name: 'Tư tưởng Hồ Chí Minh',
       icon: BarChart3,
       color: '#49BBBD',
       description: 'Kỹ năng lãnh đạo và quản lý nhóm'
@@ -42,7 +42,7 @@ export default function ExercisesPage() {
     {
       id: 'vnr202',
       code: 'VNR202',
-      name: 'Văn hóa doanh nghiệp',
+      name: 'Lịch sử Đảng Cộng sản Việt Nam',
       icon: Building,
       color: '#5B72EE',
       description: 'Hiểu biết về văn hóa và môi trường làm việc'

@@ -14,7 +14,7 @@ sys.path.insert(0, str(backend_dir))
 os.environ["MONGODB_URL"] = "mongodb+srv://elearning_user:anhkhoadeptrai@cluster0.apfn5nb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 os.environ["MONGODB_DATABASE"] = "elearning_platform"
 os.environ["SECRET_KEY"] = "your-secret-key-change-this-in-production-12345"
-os.environ["BACKEND_CORS_ORIGINS"] = "http://localhost:3000,http://localhost:3001"
+os.environ["BACKEND_CORS_ORIGINS"] = '["http://localhost:3000", "http://localhost:3001"]'
 
 if __name__ == "__main__":
     try:

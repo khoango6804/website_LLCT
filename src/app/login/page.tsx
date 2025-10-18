@@ -15,8 +15,7 @@ import {
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    email: 'admin@demo.com',
-    username: '',
+    emailOrUsername: 'admin@demo.com',
     password: 'demo123'
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -37,10 +36,10 @@ export default function LoginPage() {
     setError('');
     setSuccess('');
 
-    console.log('Login attempt with:', { email: formData.email, password: formData.password });
+    console.log('Login attempt with:', { emailOrUsername: formData.emailOrUsername, password: formData.password });
 
     try {
-      const success = await login(formData.email, formData.password);
+      const success = await login(formData.emailOrUsername, formData.password);
       
       if (success) {
         setSuccess('Đăng nhập thành công!');
@@ -56,7 +55,7 @@ export default function LoginPage() {
           }
         }, 1000);
       } else {
-        setError('Email hoặc mật khẩu không đúng');
+        setError('Email/tên đăng nhập hoặc mật khẩu không đúng');
       }
     } catch (err) {
       setError('Lỗi kết nối. Vui lòng thử lại.');
@@ -179,19 +178,19 @@ export default function LoginPage() {
 
               {/* Email/Username Field */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Tên đăng nhập
+                <label htmlFor="emailOrUsername" className="block text-sm font-medium text-gray-700 mb-2">
+                  Email hoặc tên đăng nhập
                 </label>
                 <div className="relative">
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
+                    id="emailOrUsername"
+                    name="emailOrUsername"
+                    type="text"
                     required
-                    value={formData.email}
+                    value={formData.emailOrUsername}
                     onChange={handleInputChange}
                     className="w-full h-[54px] px-8 py-[18px] border border-[#49BBBD] rounded-[40px] focus:ring-2 focus:ring-[#49BBBD] focus:border-transparent bg-white text-gray-900 placeholder-gray-500 transition-colors"
-                    placeholder="Email hoặc tên người dùng"
+                    placeholder="Nhập email hoặc tên đăng nhập"
                   />
                   <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                 </div>
@@ -280,9 +279,9 @@ export default function LoginPage() {
             <div className="mt-8 p-4 bg-gray-50 rounded-lg">
               <h3 className="text-sm font-medium text-gray-700 mb-3">Tài khoản demo:</h3>
               <div className="space-y-2 text-xs text-gray-600">
-                <div>Admin: admin@demo.com / demo123</div>
-                <div>Giảng viên: instructor@demo.com / demo123</div>
-                <div>Sinh viên: student@demo.com / demo123</div>
+                <div>Admin: admin@demo.com hoặc admin / demo123</div>
+                <div>Giảng viên: instructor@demo.com hoặc instructor / demo123</div>
+                <div>Sinh viên: student@demo.com hoặc student / demo123</div>
               </div>
             </div>
           </div>

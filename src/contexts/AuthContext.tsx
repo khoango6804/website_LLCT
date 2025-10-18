@@ -33,7 +33,6 @@ interface RegisterData {
   email: string;
   username: string;
   password: string;
-  is_instructor: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshAccessToken = async (): Promise<string | null> => {
     if (!refreshToken) return null;
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/v1/auth/refresh', {
+      const res = await fetch('http://localhost:8000/api/v1/auth/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: refreshToken })
@@ -97,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Try Backend API first
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/auth/login', {
+        const response = await fetch('http://localhost:8000/api/v1/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -141,7 +140,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           is_superuser: true,
           roles: ['admin']
         },
+        'admin': {
+          id: 1,
+          email: 'admin@demo.com',
+          username: 'admin',
+          full_name: 'Admin User',
+          is_superuser: true,
+          roles: ['admin']
+        },
         'instructor@demo.com': {
+          id: 2,
+          email: 'instructor@demo.com',
+          username: 'instructor',
+          full_name: 'Instructor User',
+          is_superuser: false,
+          roles: ['instructor']
+        },
+        'instructor': {
           id: 2,
           email: 'instructor@demo.com',
           username: 'instructor',
@@ -156,13 +171,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           full_name: 'Student User',
           is_superuser: false,
           roles: ['student']
+        },
+        'student': {
+          id: 3,
+          email: 'student@demo.com',
+          username: 'student',
+          full_name: 'Student User',
+          is_superuser: false,
+          roles: ['student']
         }
       };
 
       const defaultPasswords = {
         'admin@demo.com': 'demo123',
+        'admin': 'demo123',
         'instructor@demo.com': 'demo123',
-        'student@demo.com': 'demo123'
+        'instructor': 'demo123',
+        'student@demo.com': 'demo123',
+        'student': 'demo123'
       };
 
       // Get users from localStorage (registered users)
@@ -191,7 +217,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (mockPasswords[email as keyof typeof mockPasswords] === password) {
         const user = mockUsers[email as keyof typeof mockUsers];
-        const token = `mock_token_${Date.now()}`;
+        // Use a static token for mock login to avoid hydration issues
+        const token = `mock_token_${email.replace(/[^a-zA-Z0-9]/g, '_')}`;
         
         setToken(token);
         setRefreshToken(token);
@@ -244,7 +271,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       // Try MongoDB API first
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/v1/auth/register', {
+        const response = await fetch('http://localhost:8000/api/v1/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -273,24 +300,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const existingUsers = JSON.parse(localStorage.getItem('mockUsers') || '{}');
         const existingPasswords = JSON.parse(localStorage.getItem('mockPasswords') || '{}');
         
+        // Check if email already exists
+        if (existingUsers[userData.email] || existingPasswords[userData.email]) {
+          console.error('Mock registration failed: Email already registered');
+          return false;
+        }
+        
+        // Check if username already exists
+        const usernameExists = Object.values(existingUsers).some((user: any) => user.username === userData.username);
+        if (usernameExists) {
+          console.error('Mock registration failed: Username already taken');
+          return false;
+        }
+        
         // Generate new user ID
         const userId = Date.now();
         
-        // Save user data
+        // Save user data - all new users are students
         existingUsers[userData.email] = {
           id: userId,
           email: userData.email,
           username: userData.username,
           full_name: userData.full_name,
           is_superuser: false,
-          is_instructor: userData.is_instructor,
-          role: userData.is_instructor ? 'instructor' : 'student',
+          roles: ['student'],
           is_active: true,
           created_at: new Date().toISOString()
         };
         
-        // Save password
+        // Save password for both email and username
         existingPasswords[userData.email] = userData.password;
+        existingPasswords[userData.username] = userData.password;
+        
+        // Also save user by username for login
+        existingUsers[userData.username] = existingUsers[userData.email];
         
         // Store in localStorage
         localStorage.setItem('mockUsers', JSON.stringify(existingUsers));

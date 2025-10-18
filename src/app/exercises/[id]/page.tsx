@@ -20,27 +20,27 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
   const subjectDetails = {
     'mln111': {
       code: 'MLN111',
-      name: 'Kỹ năng mềm cơ bản',
+      name: 'Triết học Mác - Lê-nin',
       color: '#125093'
     },
     'mln122': {
       code: 'MLN122', 
-      name: 'Giao tiếp hiệu quả',
+      name: 'Kinh tế chính trị Mác - Lê-nin',
       color: '#29B9E7'
     },
     'mln131': {
       code: 'MLN131',
-      name: 'Tư duy phản biện', 
+      name: 'Chủ nghĩa xã hội khoa học', 
       color: '#49BBBD'
     },
     'hcm202': {
       code: 'HCM202',
-      name: 'Lãnh đạo nhóm',
+      name: 'Tư tưởng Hồ Chí Minh',
       color: '#49BBBD'
     },
     'vnr202': {
       code: 'VNR202',
-      name: 'Văn hóa doanh nghiệp',
+      name: 'Lịch sử Đảng Cộng sản Việt Nam',
       color: '#5B72EE'
     }
   };

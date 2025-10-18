@@ -1,19 +1,25 @@
 ## E‑Learning Platform
 
-E‑learning platform built with Next.js App Router, Tailwind CSS, and FastAPI backend. It provides pages for courses, exercises, instructors, a chatbot, and an admin area.
+E‑learning platform built with Next.js App Router, Tailwind CSS, and FastAPI backend with MongoDB. It provides pages for courses, exercises, instructors, a chatbot, and an admin area.
 
 ### Demo (local)
 - Frontend: `http://localhost:3000`
 - Backend API: `http://localhost:8000`
 - API Documentation: `http://localhost:8000/docs`
 
+### Demo Accounts
+- **Admin**: `admin@demo.com` hoặc `admin` / `demo123`
+- **Instructor**: `instructor@demo.com` hoặc `instructor` / `demo123`
+- **Student**: `student@demo.com` hoặc `student` / `demo123`
+
 ---
 
 ### Tech Stack
 - **Frontend**: Next.js `15.x` (App Router, Turbopack), TypeScript `^5`, React `19`
 - **UI**: Tailwind CSS `^4`, Headless UI, Lucide Icons, `clsx`, `tailwind-merge`
-- **Backend**: FastAPI, SQLAlchemy, SQLite/PostgreSQL
+- **Backend**: FastAPI, MongoDB (Atlas), Beanie ODM, Motor
 - **Authentication**: JWT tokens, bcrypt password hashing
+- **AI**: Google Gemini AI for chatbot and RAG
 
 ---
 
@@ -35,16 +41,53 @@ Key files and folders:
 │   └── components/
 │       ├── Navigation.tsx  // Top navigation
 │       └── Footer.tsx      // Footer
-└── backend/                # Backend (FastAPI)
+└── backend/                # Backend (FastAPI + MongoDB)
     ├── app/
     │   ├── api/            // API routes
-    │   ├── core/           // Core functionality
-    │   ├── models/         // Database models
+    │   ├── core/           // Core functionality (MongoDB connection)
+    │   ├── models/         // Database models (Beanie ODM)
     │   ├── schemas/        // Pydantic schemas
-    │   └── main.py         // FastAPI app
+    │   ├── ai/             // AI services (Gemini, RAG)
+    │   └── main_mongodb.py // FastAPI app with MongoDB
     ├── requirements.txt    // Python dependencies
-    └── run.py             // Server runner
+    ├── simple_mongodb_server.py // Main server runner
+    └── MONGODB_SETUP.md    // MongoDB setup guide
 ```
+
+---
+
+### Quick Start
+
+1. **Clone the repository**
+```bash
+git clone <your-repo-url>
+cd website_LLCT
+```
+
+2. **Start Frontend**
+```bash
+npm install
+npm run dev
+```
+
+3. **Start Backend** (in another terminal)
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate  # Windows
+pip install -r requirements.txt
+python simple_mongodb_server.py
+```
+
+4. **Access the application**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+
+5. **Login with demo accounts**
+- Admin: `admin@demo.com` / `demo123`
+- Instructor: `instructor@demo.com` / `demo123`
+- Student: `student@demo.com` / `demo123`
 
 ---
 
@@ -70,7 +113,7 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-#### Backend (FastAPI)
+#### Backend (FastAPI + MongoDB)
 1) Navigate to backend directory
 ```bash
 cd backend
@@ -95,12 +138,22 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-5) Start the server
+5) Set up MongoDB connection (optional - uses default Atlas connection)
 ```bash
-python run.py
+# Copy environment template
+cp env_mongodb_example.txt .env
+
+# Edit .env with your MongoDB credentials if needed
+```
+
+6) Start the MongoDB server
+```bash
+python simple_mongodb_server.py
 ```
 
 Open `http://localhost:8000` for API and `http://localhost:8000/docs` for documentation.
+
+**Note**: The server uses MongoDB Atlas by default. For local MongoDB setup, see `MONGODB_SETUP.md`.
 
 ---
 
@@ -144,47 +197,59 @@ Environment variables (if added later) can be set in your host and consumed via 
 ### API Endpoints
 
 #### Authentication & Users
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - User login
-- `GET /api/v1/users/` - Get users list
-- `GET /api/v1/users/{id}` - Get user details
+- `POST /api/v1/auth/register` - User registration (creates student by default)
+- `POST /api/v1/auth/login` - User login (email or username)
+- `GET /api/v1/auth/users` - Get users list (admin only)
+- `PATCH /api/v1/auth/users/{id}` - Update user role (admin only)
+- `DELETE /api/v1/auth/users/{id}` - Delete user (admin only)
 
-#### Content Management
-- `GET /api/v1/courses/` - Get courses list
-- `POST /api/v1/courses/` - Create course
-- `GET /api/v1/materials/` - Get materials
-- `POST /api/v1/materials/` - Upload materials
+#### Library & Documents
+- `GET /api/v1/library/public/documents/` - Get published documents
+- `GET /api/v1/library/public/subjects/` - Get active subjects
+- `POST /api/v1/library/documents/upload` - Upload document (instructor)
+- `GET /api/v1/library/documents/{id}` - Get document details
 
-#### AI & Chat
-- `POST /api/v1/chat/sessions` - Create chat session
-- `POST /api/v1/chat/sessions/{id}/messages` - Send message
-- `POST /api/v1/chat/sessions/{id}/stream` - Stream AI response
-- `GET /api/v1/chat/sessions/{id}/messages` - Get chat history
+#### Assessments (MongoDB)
+- `GET /api/v1/mongo/assessments/` - Get assessments
+- `POST /api/v1/mongo/assessments/` - Create assessment
+- `GET /api/v1/mongo/assessments/{id}/questions` - Get assessment questions
+- `POST /api/v1/mongo/assessments/{id}/questions` - Add questions
 
-#### Assessment
-- `GET /api/v1/assessments/` - Get assessments
-- `POST /api/v1/assessments/` - Create assessment
-- `POST /api/v1/assessments/{id}/generate` - Auto-generate questions
+#### News & Products
+- `GET /api/v1/news/` - Get news articles
+- `GET /api/v1/products/` - Get products
+- `GET /api/v1/products/stats/summary` - Get product statistics
 
-### Advanced Features
-- **AI-Powered Chat**: RAG-based Q&A with Gemini AI
-- **Vector Search**: Semantic search using embeddings
-- **Debate Rooms**: Real-time collaborative discussions
-- **Socratic Bot**: Guided questioning for deeper learning
-- **Auto Quiz Generation**: AI-generated questions from materials
-- **RBAC**: Role-based access control (Admin/Instructor/Student)
-- **Rate Limiting**: Per-user and per-endpoint limits
-- **Background Workers**: File processing, OCR, embedding generation
+#### Results & Analytics
+- `POST /api/v1/results/` - Submit assessment result
+- `GET /api/v1/results/student/{id}` - Get student results
+- `GET /api/v1/results/assessment/{id}` - Get assessment results
 
-### Roadmap (next steps)
-- Connect frontend to new backend API
-- Implement real-time features (WebSocket, SSE)
-- Add file upload with virus scanning
-- Implement debate room UI
-- Add comprehensive testing suite
-- Setup CI/CD pipeline
-- Add monitoring and alerting
-- Implement mobile app support
+### Key Features
+- **MongoDB Integration**: Full MongoDB Atlas integration with Beanie ODM
+- **Role-Based Access Control**: Admin/Instructor/Student roles with proper permissions
+- **AI-Powered Chat**: RAG-based Q&A with Google Gemini AI
+- **Document Management**: Upload, organize, and share educational materials
+- **Assessment System**: Create and manage quizzes with MongoDB storage
+- **User Management**: Admin panel for user role management
+- **Responsive Design**: Modern UI with Tailwind CSS
+- **Authentication**: JWT-based auth with email/username login support
+
+### Current Status
+✅ **Working Features**:
+- Frontend and backend connection established
+- MongoDB Atlas integration
+- User authentication and role management
+- Document library with public access
+- Assessment system with MongoDB storage
+- Admin panel for user management
+- Responsive UI with modern design
+
+🔄 **In Development**:
+- AI chatbot integration
+- Real-time features
+- Advanced assessment analytics
+- File upload improvements
 
 ---
 

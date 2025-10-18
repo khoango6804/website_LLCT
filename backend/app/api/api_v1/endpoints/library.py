@@ -101,7 +101,117 @@ async def save_uploaded_file(file: UploadFile, subject_code: str) -> tuple[str, 
     return str(file_path), file_url, file_size
 
 # ===============================
-# Library Documents Endpoints
+# Public Library Endpoints (No Authentication Required)
+# ===============================
+
+@router.get("/public/documents/", response_model=List[LibraryDocumentResponse])
+async def get_public_documents(
+    subject_code: Optional[str] = None,
+    document_type: Optional[DocumentType] = None,
+    author: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get published library documents (public access)"""
+    try:
+        # Build query - only show published documents
+        query = {"status": DocumentStatus.PUBLISHED}
+        
+        if subject_code:
+            query["subject_code"] = subject_code
+        if document_type:
+            query["document_type"] = document_type
+        if author:
+            query["author"] = {"$regex": author, "$options": "i"}
+        
+        documents = await LibraryDocument.find(query).skip(skip).limit(limit).to_list()
+        
+        return [
+            LibraryDocumentResponse(
+                id=str(doc.id),
+                title=doc.title,
+                description=doc.description,
+                subject_code=doc.subject_code,
+                subject_name=doc.subject_name,
+                document_type=doc.document_type,
+                status=doc.status,
+                file_url=doc.file_url,
+                file_name=doc.file_name,
+                file_size=doc.file_size,
+                file_type=doc.file_type,
+                author=doc.author,
+                instructor_id=str(doc.instructor_id) if doc.instructor_id else None,
+                tags=doc.tags,
+                keywords=doc.keywords,
+                semester=doc.semester,
+                academic_year=doc.academic_year,
+                chapter=doc.chapter,
+                lesson=doc.lesson,
+                download_count=doc.download_count,
+                view_count=doc.view_count,
+                rating=doc.rating,
+                rating_count=doc.rating_count,
+                created_at=doc.created_at,
+                updated_at=doc.updated_at,
+                published_at=doc.published_at
+            )
+            for doc in documents
+        ]
+        
+    except Exception as e:
+        logger.error(f"Error getting public documents: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get documents"
+        )
+
+@router.get("/public/subjects/", response_model=List[SubjectResponse])
+async def get_public_subjects(
+    is_active: Optional[bool] = True,
+    department: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0
+):
+    """Get active subjects (public access)"""
+    try:
+        query = {}
+        if is_active is not None:
+            query["is_active"] = is_active
+        if department:
+            query["department"] = {"$regex": department, "$options": "i"}
+        
+        subjects = await Subject.find(query).skip(skip).limit(limit).to_list()
+        
+        return [
+            SubjectResponse(
+                id=str(subject.id),
+                code=subject.code,
+                name=subject.name,
+                description=subject.description,
+                credits=subject.credits,
+                department=subject.department,
+                faculty=subject.faculty,
+                prerequisite_subjects=subject.prerequisite_subjects,
+                primary_instructor_id=str(subject.primary_instructor_id) if subject.primary_instructor_id else None,
+                instructors=[str(instructor_id) for instructor_id in subject.instructors],
+                total_documents=subject.total_documents,
+                total_students=subject.total_students,
+                is_active=subject.is_active,
+                created_at=subject.created_at,
+                updated_at=subject.updated_at
+            )
+            for subject in subjects
+        ]
+        
+    except Exception as e:
+        logger.error(f"Error getting public subjects: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get subjects"
+        )
+
+# ===============================
+# Library Documents Endpoints (Authenticated)
 # ===============================
 
 @router.get("/documents/", response_model=List[LibraryDocumentResponse])

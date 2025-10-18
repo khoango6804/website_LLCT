@@ -206,7 +206,7 @@ class UserCreate(BaseModel):
     username: str
     full_name: str
     password: str
-    is_instructor: bool = False
+    # is_instructor removed - all new users are students by default
 
 class UserResponse(BaseModel):
     id: str

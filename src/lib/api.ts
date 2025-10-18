@@ -1,6 +1,6 @@
 // Centralized API configuration and utilities
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 // Mock API responses for development
 export const MOCK_MODE = false;
@@ -10,6 +10,8 @@ export const API_ENDPOINTS = {
   LOGIN: '/api/v1/auth/login',
   REGISTER: '/api/v1/auth/register',
   REFRESH: '/api/v1/auth/refresh',
+  USERS: '/api/v1/auth/users',
+  USER_DETAIL: (id: string) => `/api/v1/auth/users/${id}`,
   
   // Courses
   COURSES: '/api/v1/courses',
@@ -58,11 +60,11 @@ export const API_ENDPOINTS = {
   ASSESSMENT_STATISTICS: (assessmentId: string) => `/api/v1/results/statistics/${assessmentId}`,
 
   // Library & Documents
-  LIBRARY_DOCUMENTS: '/api/v1/library/documents/',
+  LIBRARY_DOCUMENTS: '/api/v1/library/public/documents/',
   LIBRARY_DOCUMENT_UPLOAD: '/api/v1/library/documents/upload',
   LIBRARY_DOCUMENT_DETAIL: (id: string) => `/api/v1/library/documents/${id}`,
   LIBRARY_DOCUMENT_DOWNLOAD: (id: string) => `/api/v1/library/documents/${id}/download`,
-  LIBRARY_SUBJECTS: '/api/v1/library/subjects/',
+  LIBRARY_SUBJECTS: '/api/v1/library/public/subjects/',
   LIBRARY_SUBJECT_DETAIL: (id: string) => `/api/v1/library/subjects/${id}`,
   
   // News

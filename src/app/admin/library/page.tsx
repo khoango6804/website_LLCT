@@ -89,6 +89,16 @@ export default function AdminLibraryPage() {
 
   const isAdmin = hasRole('admin');
 
+  // Handler functions to avoid inline functions
+  const handleCloseCreateModal = () => setShowCreateModal(false);
+  const handleCloseEditModal = () => setEditingDocument(null);
+  const handleOpenEditModal = (document: LibraryDocument) => setEditingDocument(document);
+  const handleEditSubmit = (data: any) => {
+    if (editingDocument) {
+      handleUpdateDocument(editingDocument.id, data);
+    }
+  };
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -99,8 +109,8 @@ export default function AdminLibraryPage() {
       
       // Fetch documents and subjects in parallel
       const [documentsRes, subjectsRes] = await Promise.all([
-        authFetch(getFullUrl(API_ENDPOINTS.LIBRARY_DOCUMENTS)),
-        authFetch(getFullUrl(API_ENDPOINTS.LIBRARY_SUBJECTS))
+        fetch(getFullUrl(API_ENDPOINTS.LIBRARY_DOCUMENTS)),
+        fetch(getFullUrl(API_ENDPOINTS.LIBRARY_SUBJECTS))
       ]);
 
       if (documentsRes.ok) {
@@ -612,7 +622,7 @@ export default function AdminLibraryPage() {
                               {(isAdmin || document.instructor_id === user?.id) && (
                                 <>
                                   <button
-                                    onClick={() => setEditingDocument(document)}
+                                    onClick={() => handleOpenEditModal(document)}
                                     className="text-blue-600 hover:text-blue-900"
                                     title="Chỉnh sửa"
                                   >
@@ -669,7 +679,7 @@ export default function AdminLibraryPage() {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold text-gray-900">Thêm tài liệu mới</h3>
                 <button
-                  onClick={() => setShowCreateModal(false)}
+                  onClick={handleCloseCreateModal}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="h-6 w-6" />
@@ -679,7 +689,7 @@ export default function AdminLibraryPage() {
               <CreateDocumentForm
                 subjects={subjects}
                 onSubmit={handleCreateDocument}
-                onCancel={() => setShowCreateModal(false)}
+                onCancel={handleCloseCreateModal}
               />
                     </div>
                       </div>
@@ -692,7 +702,7 @@ export default function AdminLibraryPage() {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-bold text-gray-900">Chỉnh sửa tài liệu</h3>
                 <button
-                  onClick={() => setEditingDocument(null)}
+                  onClick={handleCloseEditModal}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <X className="h-6 w-6" />
@@ -702,8 +712,8 @@ export default function AdminLibraryPage() {
               <EditDocumentForm
                 document={editingDocument}
                 subjects={subjects}
-                onSubmit={(data) => handleUpdateDocument(editingDocument.id, data)}
-                onCancel={() => setEditingDocument(null)}
+                onSubmit={handleEditSubmit}
+                onCancel={handleCloseEditModal}
               />
                     </div>
           </div>

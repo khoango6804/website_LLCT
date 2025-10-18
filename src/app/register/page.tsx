@@ -20,8 +20,7 @@ export default function RegisterPage() {
     email: '',
     username: '',
     password: '',
-    confirmPassword: '',
-    is_instructor: false
+    confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -56,8 +55,7 @@ export default function RegisterPage() {
         full_name: formData.full_name,
         email: formData.email,
         username: formData.username,
-        password: formData.password,
-        is_instructor: formData.is_instructor
+        password: formData.password
       });
 
       if (success) {
@@ -66,7 +64,7 @@ export default function RegisterPage() {
           router.push('/login');
         }, 2000);
       } else {
-        setError('Đăng ký thất bại');
+        setError('Đăng ký thất bại. Email hoặc tên đăng nhập có thể đã được sử dụng.');
       }
     } catch (err) {
       setError('Lỗi kết nối. Vui lòng thử lại.');
@@ -76,10 +74,10 @@ export default function RegisterPage() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value
     });
   };
 
@@ -155,11 +153,13 @@ export default function RegisterPage() {
                   className="flex-1 py-2 px-4 rounded-[80px] font-medium transition-colors bg-[#49BBBD] text-white"
                   onClick={() => {
                     // Scroll to form or focus on first input
-                    const form = document.querySelector('form');
-                    if (form) {
-                      form.scrollIntoView({ behavior: 'smooth' });
-                      const firstInput = form.querySelector('input');
-                      if (firstInput) firstInput.focus();
+                    if (typeof window !== 'undefined') {
+                      const form = document.querySelector('form');
+                      if (form) {
+                        form.scrollIntoView({ behavior: 'smooth' });
+                        const firstInput = form.querySelector('input');
+                        if (firstInput) firstInput.focus();
+                      }
                     }
                   }}
                 >
@@ -170,7 +170,7 @@ export default function RegisterPage() {
 
             {/* Description */}
             <p className="text-gray-600 text-center mb-6 leading-relaxed text-sm">
-              Đăng nhập ngay để khám phá xem thư viện online của bộ môn Kỹ năng mềm có cập nhập gì mới nhất nhé
+              Tạo tài khoản sinh viên để khám phá thư viện online và tham gia các khóa học của bộ môn
             </p>
 
             {/* Form */}
@@ -300,41 +300,20 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Role Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Loại tài khoản
-              </label>
-              <div className="space-y-3">
-                <label className="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="student"
-                    checked={!formData.is_instructor}
-                    onChange={() => setFormData({...formData, is_instructor: false})}
-                    className="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <div className="font-medium text-gray-900">Sinh viên</div>
-                    <div className="text-sm text-gray-600">Học tập và làm bài tập</div>
-                  </div>
-                </label>
-                
-                <label className="flex items-center p-3 border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                  <input
-                    type="radio"
-                    name="role"
-                    value="instructor"
-                    checked={formData.is_instructor}
-                    onChange={() => setFormData({...formData, is_instructor: true})}
-                    className="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <div className="font-medium text-gray-900">Giảng viên</div>
-                    <div className="text-sm text-gray-600">Tạo khóa học và quản lý sinh viên</div>
-                  </div>
-                </label>
+            {/* Account Type Info */}
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center">
+                <div className="flex-shrink-0">
+                  <UserCheck className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800">
+                    Tài khoản sinh viên
+                  </h3>
+                  <p className="text-sm text-blue-700">
+                    Tài khoản mới sẽ được tạo với quyền sinh viên. Liên hệ admin để nâng cấp thành giảng viên.
+                  </p>
+                </div>
               </div>
             </div>
 

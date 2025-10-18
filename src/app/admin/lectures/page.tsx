@@ -33,7 +33,7 @@ export default function AdminLecturesPage() {
   const courseSections = [
     {
       code: 'MLN111',
-      name: 'Kỹ năng mềm cơ bản',
+      name: 'Triết học Mác - Lê-nin',
       items: [
         { title: 'Tên giáo trình', instructor: 'Nguyễn Văn Bình', date: '20/04/2025', duration: '20 phút' },
         { title: 'Tên giáo trình', instructor: 'Nguyễn Văn Bình', date: '20/04/2025', duration: '20 phút' },
@@ -42,7 +42,7 @@ export default function AdminLecturesPage() {
     },
     {
       code: 'MLN122',
-      name: 'Giao tiếp hiệu quả',
+      name: 'Kinh tế chính trị Mác - Lê-nin',
       items: [
         { title: 'Tên giáo trình', instructor: 'Nguyễn Văn Bình', date: '20/04/2025', duration: '20 phút' },
         { title: 'Tên giáo trình', instructor: 'Nguyễn Văn Bình', date: '20/04/2025', duration: '20 phút' },
@@ -51,7 +51,7 @@ export default function AdminLecturesPage() {
     },
     {
       code: 'MLN131',
-      name: 'Tư duy phản biện',
+      name: 'Chủ nghĩa xã hội khoa học',
       items: [
         { title: 'Tuần 1 - Tên bài kiểm tra', instructor: 'Nguyễn Văn Hình', date: '20/06/2025', duration: '30 câu' },
         { title: 'Tuần 1 - Tên bài kiểm tra', instructor: 'Nguyễn Văn Hình', date: '20/06/2025', duration: '30 câu' },
@@ -60,7 +60,7 @@ export default function AdminLecturesPage() {
     },
     {
       code: 'HCM202',
-      name: 'Lãnh đạo nhóm',
+      name: 'Tư tưởng Hồ Chí Minh',
       items: [
         { title: 'Tên giáo trình', instructor: 'Nguyễn Văn Bình', date: '20/04/2025', duration: '20 phút' },
         { title: 'Tên giáo trình', instructor: 'Nguyễn Văn Bình', date: '20/04/2025', duration: '20 phút' },
@@ -69,7 +69,7 @@ export default function AdminLecturesPage() {
     },
     {
       code: 'VNR202',
-      name: 'Văn hóa doanh nghiệp',
+      name: 'Lịch sử Đảng Cộng sản Việt Nam',
       items: []
     }
   ];

@@ -84,17 +84,16 @@ async def register(user_data: UserCreate):
                 detail="Username already taken"
             )
         
-        # Create new user
+        # Create new user - always as student, only admin can upgrade role
         hashed_password = get_password_hash(user_data.password)
-        role = UserRole.INSTRUCTOR if user_data.is_instructor else UserRole.STUDENT
         
         user = User(
             email=user_data.email,
             username=user_data.username,
             full_name=user_data.full_name,
             hashed_password=hashed_password,
-            role=role,
-            is_instructor=user_data.is_instructor
+            role=UserRole.STUDENT,  # Always create as student
+            is_instructor=False     # Always false for new registrations
         )
         
         await user.insert()
@@ -143,14 +142,17 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
                 await admin_user.insert()
                 logger.info("Auto-created admin user")
         
-        # Find user by email
-        logger.info(f"Looking for user with email: {form_data.username}")
-        user = await User.find_one(User.email == form_data.username)
+        # Find user by email or username
+        logger.info(f"Looking for user with email or username: {form_data.username}")
+        user = await User.find_one({"$or": [
+            {"email": form_data.username},
+            {"username": form_data.username}
+        ]})
         if not user:
             logger.error(f"User not found: {form_data.username}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password",
+                detail="Incorrect email/username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
@@ -162,7 +164,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             logger.error(f"Password verification failed for user: {user.email}")
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect email or password",
+                detail="Incorrect email/username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         
